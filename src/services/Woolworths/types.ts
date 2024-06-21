@@ -11,4 +11,5 @@ export type ShopBaseURL = `${BaseURL}/shop/productdetails`
 export type ShopProductURL = `${BaseURL}/shop/productdetails/${StockCode}/${string}`
 
 export type DetailsURL = typeof details_url
+export type ProductDetailsBaseURL = `${BaseURL}/${DetailsURL}`
 export type ProductDetailsURL = `${BaseURL}/${DetailsURL}/${StockCode}`
