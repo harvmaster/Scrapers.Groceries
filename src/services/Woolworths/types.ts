@@ -14,6 +14,11 @@ export type DetailsURL = typeof details_url
 export type ProductDetailsBaseURL = `${BaseURL}/${DetailsURL}`
 export type ProductDetailsURL = `${BaseURL}/${DetailsURL}/${StockCode}`
 
+export type FetchOptions = {
+  cookies: string;
+  retry: boolean;
+}
+
 export type Product = {
   TileID: number;
   Stockcode: number;
