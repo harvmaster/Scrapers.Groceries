@@ -1,5 +1,8 @@
+import makeFetchCookie from 'fetch-cookie'
+
 export const getCookies = async (url: string): Promise<string> => {
-  const response = await fetch(url, {
+  const fetchCookie = makeFetchCookie(fetch)
+  const response = await fetchCookie(url, {
     redirect: 'follow'
   })
   // if (!response.ok) {
