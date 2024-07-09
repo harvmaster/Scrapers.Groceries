@@ -1,7 +1,7 @@
 import { base_url } from "./Woolworths";
 import type { SitemapURL, ShopProductURL, FetchOptions } from "./types";
 import { load } from 'cheerio'
-import FetchInstance from "./FetchInstance";
+import FetchInstance from "./fetchInstance";
 
 export const extractFromSitemap = async (sitemap: SitemapURL, options?: FetchOptions): Promise<ShopProductURL[]> => {
   const url = `${sitemap}`

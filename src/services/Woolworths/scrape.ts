@@ -5,14 +5,14 @@ import { sitemaps } from './Woolworths';
 import extractFromSitemap from "./extractFromSitemap";
 import processProduct from './processProduct';
 
-import RateLimitQueue from '../../lib/RateLimiter';
+import RateLimitQueue from '../../lib/rateLimiter';
 
 
 export const scrapeWoolworths = async (limit?: number): Promise<Product[]> => {
   const products = await extractFromSitemap(sitemaps[0])
   
   const limitedProducts = products.slice(0, limit)
-  console.log(limitedProducts)
+  // console.log(limitedProducts)
 
   const rateLimiter = new RateLimitQueue(10, 250)
 

@@ -1,7 +1,7 @@
 import { expect, test, describe } from 'bun:test'
 import scrapeWoolworths from '../scrape'
 
-import analytics from '../../../lib/Analytics'
+import analytics from '../../../lib/analytics'
 
 describe('Woolworths scrape', () => {
   test('Gets Woolworths products', async () => {

@@ -4,7 +4,7 @@ import getStockCode from "./getStockCode";
 import getDetailsURL from "./getDetailsURL";
 import getProductDetails from "./getProductDetails";
 
-import analytics from "../../lib/Analytics";
+import analytics from "../../lib/analytics";
 
 type SuccessfulAnalytic = {
   product: Product
