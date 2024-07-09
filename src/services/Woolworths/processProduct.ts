@@ -6,40 +6,46 @@ import getProductDetails from "./getProductDetails";
 
 import analytics from "../../lib/Analytics";
 
-const storeProductAnalytics = async (productURL: ShopProductURL, product: Product) => {
-  analytics.insert({
-    timestamp: new Date(),
-    status: 'success',
-    productURL: productURL,
-    product
-  })
+type SuccessfulAnalytic = {
+  product: Product
 }
 
-const storeErrorAnalytics = async (productURL: ShopProductURL, error: Error) => {
-  analytics.insert({
-    timestamp: new Date(),
-    status: 'error',
-    productURL: productURL,
-    error
-  })
+type ErrorAnalytic = {
+  error: Error
+}
+
+const createAnalytics = (productURL: string) => {
+  const startTime = new Date()
+
+  return (data: SuccessfulAnalytic | ErrorAnalytic) => {
+    const endTime = new Date()
+    const duration = endTime.getTime() - startTime.getTime()
+
+    const analytic = {
+      timestamp: new Date(),
+      duration,
+      productURL,
+      ...data
+    }
+
+    analytics.insert(analytic)
+  }
+
 }
 
 export const processProduct = async (productURL: ShopProductURL): Promise<Product | undefined> => {
   const stockCode = getStockCode(productURL)
   const detailsURL = getDetailsURL(stockCode)
 
+  const storeProductAnalytics = createAnalytics(productURL)
+
   try {
     const product = await getProductDetails(detailsURL)
-
-    // Collect analytics
-    storeProductAnalytics(productURL, product)
+    storeProductAnalytics({ product })
 
     return product
   } catch  (err) {
-    // Collect analytics
-    storeErrorAnalytics(productURL, err as Error)
-
-    return undefined
+    storeProductAnalytics({ error: err as Error })
   }
 }
 
