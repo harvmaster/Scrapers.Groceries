@@ -1,6 +1,6 @@
 import { test, describe, expect } from 'bun:test'
 
-import { getDetailsURL } from '../getDetailsURL';
+import { getDetailsURL } from '../utils/getDetailsURL';
 
 describe('Woolworths getDetailsURL', () => {
   test('Generates Woolworths product details URL', () => {

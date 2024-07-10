@@ -1,6 +1,6 @@
 import { test, describe, expect } from 'bun:test'
 
-import { getProductDetails } from '../getProductDetails';
+import { getProductDetails } from '../utils/getProductDetails';
 
 describe('Woolworths getProductDetails', () => {
   test('Gets Woolworths product details', async () => {

@@ -1,6 +1,6 @@
-import { test, describe, expect } from 'bun:test'
+import { test, describe, expect, mock } from 'bun:test'
 
-import { extractFromSitemap } from '../extractFromSitemap';
+import { extractFromSitemap } from '../utils/extractFromSitemap';
 import { sitemaps } from '../Woolworths';
 
 describe('Woolworths extractFromSitemap', () => {
@@ -9,5 +9,21 @@ describe('Woolworths extractFromSitemap', () => {
     const productURLs = await extractFromSitemap(sitemap)
     expect(productURLs).toBeTruthy()
     expect(productURLs.length).toBeGreaterThan(0)
+  })
+
+  test('Calls callback for Sitemap', async () => {
+    const sitemap = sitemaps[0]
+
+    let onSiteMapCalled = false
+    const onSitemap = mock((data: string) => {
+      onSiteMapCalled = true
+    })
+
+    await extractFromSitemap(sitemap, {
+      onSitemap 
+    })
+
+    expect(onSitemap).toHaveBeenCalled()
+    expect(onSiteMapCalled).toBe(true)
   })
 })

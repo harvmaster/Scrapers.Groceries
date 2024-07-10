@@ -1,4 +1,4 @@
-import type { ProductDetailsURL, Product, ProductDetailsResponse } from "./types";
+import type { ProductDetailsURL, Product, ProductDetailsResponse } from "../types";
 import FetchInstance from "./fetchInstance";
 
 export const getProductDetails = async (url: ProductDetailsURL): Promise<Product> => {

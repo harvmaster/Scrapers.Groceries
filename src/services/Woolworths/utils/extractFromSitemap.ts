@@ -1,4 +1,4 @@
-import type { SitemapURL, ShopProductURL, SitemapCallbacks } from "./types";
+import type { SitemapURL, ShopProductURL, SitemapCallbacks } from "../types";
 import { load } from 'cheerio'
 import FetchInstance from "./fetchInstance";
 
