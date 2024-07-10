@@ -1,4 +1,4 @@
-import type { Product } from './types';
+import type { Product, ScrapingCallbacks } from './types';
 
 import { sitemaps } from './Woolworths';
 
@@ -7,17 +7,20 @@ import processProduct from './processProduct';
 
 import RateLimitQueue from '../../lib/rateLimiter';
 
+export const scrapeWoolworths = async (limit?: number, callbacks?: ScrapingCallbacks): Promise<Product[]> => {
+  const sitemapPromises = sitemaps.map(sitemap => extractFromSitemap(sitemap, callbacks))
+  const sitemapsData = (await Promise.all(sitemapPromises)).flat()
 
-export const scrapeWoolworths = async (limit?: number): Promise<Product[]> => {
-  const products = await extractFromSitemap(sitemaps[0])
+  callbacks?.onProductURLS?.(sitemapsData)
   
-  const limitedProducts = products.slice(0, limit)
+  const limitedProducts = sitemapsData.slice(0, limit)
   // console.log(limitedProducts)
 
   const rateLimiter = new RateLimitQueue(10, 250)
 
   const productPromises = limitedProducts.map(async (productURL) => {
-    const product = await rateLimiter.add(() => processProduct(productURL))
+    const productCallacks = callbacks?.generateProductCallbacks?.() || callbacks
+    const product = await rateLimiter.add(() => processProduct(productURL, productCallacks))
     return product
   })
 

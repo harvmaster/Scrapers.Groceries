@@ -1,51 +1,56 @@
-import type { Product, ShopProductURL } from "./types";
+import type { Product, ProductCallbacks, ScrapingCallbacks, ShopProductURL } from "./types";
 
 import getStockCode from "./getStockCode";
 import getDetailsURL from "./getDetailsURL";
 import getProductDetails from "./getProductDetails";
 
-import analytics from "../../lib/analytics";
+// type SuccessfulAnalytic = {
+//   product: Product
+//   error?: never
+// }
 
-type SuccessfulAnalytic = {
-  product: Product
-}
+// type ErrorAnalytic = {
+//   error: Error
+//   product?: never;
+// }
 
-type ErrorAnalytic = {
-  error: Error
-}
+// const createAnalytics = (productURL: string) => {
+//   const startTime = new Date()
 
-const createAnalytics = (productURL: string) => {
-  const startTime = new Date()
+//   return (data: SuccessfulAnalytic | ErrorAnalytic) => {
+//     const endTime = new Date()
+//     const duration = endTime.getTime() - startTime.getTime()
 
-  return (data: SuccessfulAnalytic | ErrorAnalytic) => {
-    const endTime = new Date()
-    const duration = endTime.getTime() - startTime.getTime()
+//     const analytic = {
+//       timestamp: new Date(),
+//       description: 'item_scraped',
+//       status: data.error ? 'error' : 'success',
 
-    const analytic = {
-      timestamp: new Date(),
-      duration,
-      productURL,
-      ...data
-    }
+//       data: {
+//         duration,
+//         productURL,
+//         ...data
+//       }
+//     }
 
-    analytics.insert(analytic)
-  }
+//     analytics.insert(analytic)
+//   }
 
-}
+// }
 
-export const processProduct = async (productURL: ShopProductURL): Promise<Product | undefined> => {
+export const processProduct = async (productURL: ShopProductURL, callbacks?: ProductCallbacks): Promise<Product | undefined> => {
   const stockCode = getStockCode(productURL)
   const detailsURL = getDetailsURL(stockCode)
 
-  const storeProductAnalytics = createAnalytics(productURL)
+  callbacks?.beforeProduct?.(detailsURL)
 
   try {
     const product = await getProductDetails(detailsURL)
-    storeProductAnalytics({ product })
+    callbacks?.onProductSuccess?.(product)
 
     return product
   } catch  (err) {
-    storeProductAnalytics({ error: err as Error })
+    callbacks?.onProductError?.(err as Error)
   }
 }
 

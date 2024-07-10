@@ -19,6 +19,28 @@ export type FetchOptions = {
   retry: boolean;
 }
 
+export type SitemapCallbacks = {
+  onSitemap?: (data: string) => void;
+  onSitemapError?: (error: Error) => void;
+}
+
+export type ProductURLSCallbacks = {
+  onProductURLS?: (data: ShopProductURL[]) => void;
+}
+
+export type ProductCallbacks = {
+  beforeProduct?: (url: ProductDetailsURL) => void;
+  onProductSuccess?: (data: Product) => void;
+  onProductError?: (error: Error) => void;
+}
+
+export type ScrapingCallbacks = SitemapCallbacks & ProductURLSCallbacks & ProductCallbacks & {
+  generateProductCallbacks?: () => ProductCallbacks;
+
+  onError?: (error: Error) => void;
+  onFinish?: () => void; 
+}
+
 export type Product = {
   TileID: number;
   Stockcode: number;

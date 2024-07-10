@@ -1,9 +1,9 @@
 import { base_url } from "./Woolworths";
-import type { SitemapURL, ShopProductURL, FetchOptions } from "./types";
+import type { SitemapURL, ShopProductURL, FetchOptions, ScrapingCallbacks, SitemapCallbacks } from "./types";
 import { load } from 'cheerio'
 import FetchInstance from "./fetchInstance";
 
-export const extractFromSitemap = async (sitemap: SitemapURL, options?: FetchOptions): Promise<ShopProductURL[]> => {
+export const extractFromSitemap = async (sitemap: SitemapURL, callbacks?: SitemapCallbacks): Promise<ShopProductURL[]> => {
   const url = `${sitemap}`
 
   const response = await FetchInstance.fetch(url, {
@@ -16,11 +16,13 @@ export const extractFromSitemap = async (sitemap: SitemapURL, options?: FetchOpt
   })
 
   if (!response.ok) {
-    console.log(response)
+    callbacks?.onSitemapError?.(new Error(`Failed to fetch sitemap: ${sitemap}`))
     throw new Error(`Failed to fetch sitemap: ${sitemap}`)
   }
   
   const text = await response.text()
+  callbacks?.onSitemap?.(text)
+
   const $ = load(text)
 
   const productURLs = $('loc').map((i, element) => $(element).text()).get().filter((url: string | string[]) => {
