@@ -23,9 +23,9 @@ class Analytics {
     await this.db.run('DELETE FROM analytics')
   }
 
-  async toJSONFile () {
+  async toJSONFile (name?: string) {
     const data = await this.get()
-    fs.writeFileSync('analytics.json', JSON.stringify(data, null, 2))
+    fs.writeFileSync(`${name || 'analytics'}.json`, JSON.stringify(data, null, 2))
   }
 }
 
