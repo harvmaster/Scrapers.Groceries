@@ -177,3 +177,5 @@ dist
 # Scraping Data
 analytics.json
 analytics.sqlite
+
+logs/*

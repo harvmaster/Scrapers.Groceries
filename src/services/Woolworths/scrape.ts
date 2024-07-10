@@ -66,7 +66,12 @@ export const scrapeWoolworths = async (limit?: number, ...callbackGroups: Scrapi
   const res = await Promise.all(productPromises)
 
   // Filter out any undefined products and return
-  return res.filter((product) => product !== undefined)
+  const filtered = res.filter((product) => product !== undefined)
+
+  // Call the callback for the finish. This can be used for analytics, progress tracking, etc.
+  callbacks.onFinish?.(filtered)
+
+  return filtered as Product[]
 }
 
 export default scrapeWoolworths

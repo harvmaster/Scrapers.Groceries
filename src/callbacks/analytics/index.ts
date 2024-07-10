@@ -24,7 +24,7 @@ const createAnalyticsCallbacks = (jobId: string) => {
       timestamp: new Date(),
       jobId,
       ...data
-    })
+    }, jobId)
   }
 
   const onSitemap = (data: string): void => {
@@ -145,7 +145,7 @@ const createAnalyticsCallbacks = (jobId: string) => {
       data: {}
     })
 
-    analytics.toJSONFile(`analytics-${jobId}`)
+    analytics.toJSONFile(jobId)
   }
 
   const analyticCallbacks = {

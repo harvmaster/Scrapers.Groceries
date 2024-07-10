@@ -13,7 +13,7 @@ const scrape = async () => {
     }
   }
 
-  await scrapeWoolworths(40, analyticCallbacks, testCallbacks)
+  await scrapeWoolworths(10, analyticCallbacks, testCallbacks)
 }
 
 scrape()

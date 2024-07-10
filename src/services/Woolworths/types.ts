@@ -40,7 +40,7 @@ export type ScrapingCallbacks = SitemapCallbacks & ProductURLSCallbacks & Produc
   onStart?: () => void;
   onProgress?: (progress: number) => void;
   onError?: (error: Error) => void;
-  onFinish?: () => void; 
+  onFinish?: (products: Product[]) => void; 
 }
 
 export type Product = {
