@@ -2,10 +2,11 @@ import type {
   Product,
   ProductDetailsURL,
   ShopProductURL
-} from './services/Woolworths/types'
+} from './services/Woolworths'
+
+import { scrapeWoolworths } from './services/Woolworths'
 
 import analytics from './lib/analytics'
-import scrapeWoolworths from './services/Woolworths/scrape';
 
 type AnalyticsData = {
   description: string;

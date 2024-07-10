@@ -1,5 +1,4 @@
-import { base_url } from "./Woolworths";
-import type { SitemapURL, ShopProductURL, FetchOptions, ScrapingCallbacks, SitemapCallbacks } from "./types";
+import type { SitemapURL, ShopProductURL, SitemapCallbacks } from "./types";
 import { load } from 'cheerio'
 import FetchInstance from "./fetchInstance";
 

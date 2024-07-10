@@ -9,12 +9,11 @@ import RateLimitQueue from '../../lib/rateLimiter';
 
 export const scrapeWoolworths = async (limit?: number, callbacks?: ScrapingCallbacks): Promise<Product[]> => {
   const sitemapPromises = sitemaps.map(sitemap => extractFromSitemap(sitemap, callbacks))
-  const sitemapsData = (await Promise.all(sitemapPromises)).flat()
+  const productURLs = (await Promise.all(sitemapPromises)).flat()
 
-  callbacks?.onProductURLS?.(sitemapsData)
+  callbacks?.onProductURLS?.(productURLs)
   
-  const limitedProducts = sitemapsData.slice(0, limit)
-  // console.log(limitedProducts)
+  const limitedProducts = productURLs.slice(0, limit)
 
   const rateLimiter = new RateLimitQueue(10, 250)
 
