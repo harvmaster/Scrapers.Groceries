@@ -2,7 +2,7 @@ import type { SitemapURL, ShopProductURL, SitemapCallbacks } from "../types";
 import { load } from 'cheerio'
 import FetchInstance from "./fetchInstance";
 
-export const extractFromSitemap = async (sitemap: SitemapURL, callbacks?: SitemapCallbacks): Promise<ShopProductURL[]> => {
+export const extractFromSitemap = async (sitemap: SitemapURL, callbacks?: Partial<SitemapCallbacks>): Promise<ShopProductURL[]> => {
   const url = `${sitemap}`
 
   const response = await FetchInstance.fetch(url, {

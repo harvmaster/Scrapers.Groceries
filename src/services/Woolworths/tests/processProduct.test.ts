@@ -7,10 +7,10 @@ describe('Woolworths processProduct', () => {
     const url = 'https://www.woolworths.com.au/shop/productdetails/233833/allen-s-minties-mint-chewy-lollies-family-size-bag'
     const product = await processProduct(url)
     expect(product).toBeTruthy()
-    expect(product?.Name).toBeTruthy()
-    expect(product?.Price).toBeTruthy()
-    expect(product?.Barcode).toBeTruthy()
-    expect(product?.DetailsImagePaths[0]).toBeTruthy()
+    expect(product?.name).toBeTruthy()
+    expect(product?.price).toBeTruthy()
+    expect(product?.barcode).toBeTruthy()
+    expect(product?.images[0]).toBeTruthy()
   })
 
   test('Process Woolworths product with callbacks', async () => {

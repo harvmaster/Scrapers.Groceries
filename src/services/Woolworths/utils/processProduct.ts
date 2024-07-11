@@ -1,11 +1,12 @@
-import type { Product, ProductCallbacks, ShopProductURL } from "../types";
+import type { WoolworthsProduct, ProductCallbacks, ShopProductURL, Product } from "../types";
 
 import getStockCode from "./getStockCode";
 import getDetailsURL from "./getDetailsURL";
 import getProductDetails from "./getProductDetails";
+import formatProduct from "./formatProduct";
 
 
-export const processProduct = async (productURL: ShopProductURL, callbacks?: ProductCallbacks): Promise<Product | undefined> => {
+export const processProduct = async (productURL: ShopProductURL, callbacks?: Partial<ProductCallbacks>): Promise<Product | undefined> => {
   // Extract the stock code from the URL
   const stockCode = getStockCode(productURL)
 
@@ -18,9 +19,13 @@ export const processProduct = async (productURL: ShopProductURL, callbacks?: Pro
   // Scrape the product details and call the callbacks. Return the product
   try {
     const product = await getProductDetails(detailsURL)
-    callbacks?.onProductSuccess?.(product)
+    callbacks?.onRawProduct?.(product)
 
-    return product
+    // Format the product to standard shape and call the callback
+    const formattedProduct = formatProduct(productURL, product)
+    callbacks?.onProductSuccess?.(formattedProduct)
+
+    return formattedProduct
   } catch  (err) {
     callbacks?.onProductError?.(err as Error)
   }

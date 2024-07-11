@@ -7,13 +7,10 @@ const scrape = async () => {
 
   const analyticCallbacks = createAnalyticsCallbacks(jobId)
 
-  const testCallbacks = {
-    onProgress: (progress: number) => {
-      console.log(progress)
-    }
-  }
 
-  await scrapeWoolworths(10, analyticCallbacks, testCallbacks)
+
+
+  await scrapeWoolworths(10, analyticCallbacks)
 }
 
 scrape()

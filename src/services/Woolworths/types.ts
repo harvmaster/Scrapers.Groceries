@@ -20,30 +20,48 @@ export type FetchOptions = {
 }
 
 export type SitemapCallbacks = {
-  onSitemap?: (data: string) => void;
-  onSitemapError?: (error: Error) => void;
+  onSitemap: (data: string) => void;
+  onSitemapError: (error: Error) => void;
 }
 
 export type ProductURLSCallbacks = {
-  onProductURLS?: (data: ShopProductURL[]) => void;
+  onProductURLS: (data: ShopProductURL[]) => void;
 }
 
 export type ProductCallbacks = {
-  beforeProduct?: (url: ProductDetailsURL) => void;
-  onProductSuccess?: (data: Product) => void;
-  onProductError?: (error: Error) => void;
+  beforeProduct: (url: ProductDetailsURL) => void;
+  onRawProduct: (data: WoolworthsProduct) => void;
+  onProductSuccess: (data: Product) => void;
+  onProductError: (error: Error) => void;
 }
 
 export type ScrapingCallbacks = SitemapCallbacks & ProductURLSCallbacks & ProductCallbacks & {
-  generateProductCallbacks?: () => ProductCallbacks;
+  generateProductCallbacks: () => Partial<ProductCallbacks>;
 
-  onStart?: () => void;
-  onProgress?: (progress: number) => void;
-  onError?: (error: Error) => void;
-  onFinish?: (products: Product[]) => void; 
+  onStart: () => void;
+  onProgress: (progress: number) => void;
+  onError: (error: Error) => void;
+  onFinish: (products: Product[]) => void; 
 }
 
 export type Product = {
+  retailer_id: string;
+  retailer_url: string;
+  barcode: string;
+  name: string;
+  brand: string;
+  description: string;
+  images: string[];
+  price: number;
+  was_price: number;
+
+  unit: string;
+
+  category: string;
+  subcategory: string;
+}
+
+export type WoolworthsProduct = {
   TileID: number;
   Stockcode: number;
   Barcode: string;
@@ -226,7 +244,7 @@ export type CountryOfOriginLabel = {
 }
 
 export type ProductDetailsResponse = {
-  Product: Product;
+  Product: WoolworthsProduct;
   Nutrition: any;
   VideoUrl: any;
   PrimaryCategory: PrimaryCategory;

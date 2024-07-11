@@ -1,7 +1,7 @@
-import type { ProductDetailsURL, Product, ProductDetailsResponse } from "../types";
+import type { ProductDetailsURL, WoolworthsProduct, ProductDetailsResponse } from "../types";
 import FetchInstance from "./fetchInstance";
 
-export const getProductDetails = async (url: ProductDetailsURL): Promise<Product> => {
+export const getProductDetails = async (url: ProductDetailsURL): Promise<WoolworthsProduct> => {
   const response = await FetchInstance.fetch(url + '?isMobile=false&useVariant=true')
 
   if (!response.ok) {

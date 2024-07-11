@@ -9,15 +9,6 @@ export const createCallbackHandler = <T extends CallbackGroup>(callbacks: T[]): 
 
   const callbackArray: CallbackArray = {}
 
-  // callbacks.forEach((callbackGroup) => {
-  //   Object.entries(callbackGroup).forEach(([key, value]) => {
-  //     handler[key] = (args: any) => {
-  //       handler[key]?.(args)
-  //       callbackGroup[key](args)
-  //     }
-  //   })
-  // })
-
   callbacks.forEach((callbackGroup) => {
     Object.entries(callbackGroup).forEach(([key, value]) => {
       if (!callbackArray[key]) {

@@ -1,5 +1,5 @@
 import analytics from "../../lib/analytics";
-import type { Product, ProductDetailsURL, ShopProductURL } from "../../services/Woolworths";
+import type { WoolworthsProduct, ProductDetailsURL, ShopProductURL, ScrapingCallbacks, Product } from "../../services/Woolworths";
 
 type AnalyticsData = {
   description: string;
@@ -13,7 +13,7 @@ type ScrapedResult = {
   data: Product | Error;
 }
 
-const createAnalyticsCallbacks = (jobId: string) => {
+const createAnalyticsCallbacks = (jobId: string): Partial<ScrapingCallbacks> => {
   let startTime: Date;
   let finishTime: Date;
   
