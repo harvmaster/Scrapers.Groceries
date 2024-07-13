@@ -68,6 +68,20 @@ const createAnalyticsCallbacks = (jobId: string): Partial<ScrapingCallbacks> => 
       productURL = url
       startTime = new Date()
     }
+
+    const onRawProduct = (product: unknown): void => {
+      const duration = new Date().getTime() - startTime.getTime()
+  
+      addAnalytics({
+        description: 'raw_product_scraped',
+        status: 'success',
+        data: {
+          duration,
+          product,
+          productURL
+        }
+      })
+    }
   
     const onProductSuccess = (product: Product): void => {
       const duration = new Date().getTime() - startTime.getTime()
@@ -105,6 +119,7 @@ const createAnalyticsCallbacks = (jobId: string): Partial<ScrapingCallbacks> => 
   
     return {
       beforeProduct,
+      onRawProduct,
       onProductSuccess,
       onProductError
     }

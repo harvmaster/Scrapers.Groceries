@@ -5,10 +5,9 @@ export type Category = string;
 export type Subcategory = string;
 export type SpecificCategory = string;
 
-export type BrowseURL = `https://www.coles.com.au/browse`
-export type CategoryURL = `${BrowseURL}/${Category}`
-export type SubcategoryURL = `${BrowseURL}/${Category}/${Subcategory}`
-export type SpecificCategoryURL = `${BrowseURL}/${Category}/${Subcategory}/${SpecificCategory}`
+export type CategoryBaseURL = `https://www.coles.com.au/browse`
+export type BaseCategory = `${CategoryBaseURL}/${Category}`
+export type CategoryUrl = `${CategoryBaseURL}/${Category}/${Subcategory}/${SpecificCategory}`
 
 export type SentryVersionString = string;
 export type SentryVersion = {

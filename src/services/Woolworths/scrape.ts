@@ -39,7 +39,7 @@ export const scrapeWoolworths = async (limit?: number, ...callbackGroups: Partia
   const limitedProducts = productURLs.slice(0, limit)
 
   // Create a rate limiter to limit the number of requests to the Woolworths website
-  const rateLimiter = new RateLimitQueue(10, 250)
+  const rateLimiter = new RateLimitQueue(20, 50)
 
   // Create a tracker for the progress
   const trackProgress = createProgressTracker(limitedProducts.length, callbacks.onProgress)

@@ -8,7 +8,5 @@ describe('Coles scrape', () => {
 
     expect(products).toBeTruthy()
     expect(products.length).toBeGreaterThan(0)
-  }, {
-    timeout: 30000
   })
 })

@@ -1,6 +1,6 @@
 import type { Category, CategoryBaseURL } from "../types";
 
-type CategoryURL<T extends Category> = `${CategoryBaseURL}/${T}/${string}`
+type CategoryURL<T extends Category> = `${CategoryBaseURL}/${T}/${string}` | `${CategoryBaseURL}/${T}`
 
 export const extractCategory = <T extends Category>(url: CategoryURL<T>): T => {
   const category = url.split('/')[4]

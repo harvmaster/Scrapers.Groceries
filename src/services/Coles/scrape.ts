@@ -1,23 +1,45 @@
 import { CATEGORIES_SITEMAP } from "./Coles"
-import extractBaseCategory from "./utils/extractBaseCategory"
-import getCategoryUrls from "./utils/getCategoryUrls"
-import scrapeCategory from "./utils/scrapeCategory"
+import extractCategory from "./utils/category/extractCategory"
+import extractCategoryURL from "./utils/category/extractCategoryURL"
+import createColesInterface from "./utils/createColesInterface"
+import { createSentryScraper } from "./utils/createSentryScraper"
+import extractCategoriesSitemap from "./utils/extractCategoriesSitemap"
 
 const dedupe = <T>(arr: T[]) => Array.from(new Set(arr))
 
-
-export const scrapeColes = async ( ) => {
-  const allCategories = await getCategoryUrls(CATEGORIES_SITEMAP)
-  console.log(allCategories.length)
+export const scrapeColes = async () => {
+  const coles = await createColesInterface()
   
-  const categories = dedupe(allCategories.map((extractBaseCategory))).slice(0, 1)
-  console.log(categories)
-
-
-  const products = (await Promise.all(categories.map(scrapeCategory))).flat()
-
-  console.log(products.length)
-  return products
+  try {
+    const sentryScraper = await createSentryScraper(coles.fetch)
+  
+    const rawcCategories = await extractCategoriesSitemap()
+    console.log(rawcCategories.length)
+  
+    const categoryURLs = rawcCategories.map(extractCategoryURL)
+    console.log(categoryURLs.length)
+  
+    const dedupedCategories = dedupe(categoryURLs).slice(0, 1)
+    console.log(dedupedCategories)
+  
+    const categoryFns = await Promise.all(dedupedCategories.map(async (categoryURL) => {
+      const category = extractCategory(categoryURL)
+      return sentryScraper(category)
+    }))
+  
+    const allFns = categoryFns.flat()
+  
+    const results = await Promise.all(allFns.map(async (fn) => {
+      return fn()
+    }))
+  
+    console.log(results)
+  
+    return results
+  } catch (err) {
+    console.error(err)
+    await coles.close()
+  }
 }
 
 export default scrapeColes
