@@ -178,4 +178,8 @@ dist
 analytics.json
 analytics.sqlite
 
+products.sqlite
+
 logs/*
+
+cookies.json

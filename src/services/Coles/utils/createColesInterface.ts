@@ -46,47 +46,39 @@ export const createColesInterface = async () => {
   const pages: Page[] = []
 
   const fetchPage = async (url: string) => {
-    const requestContext = basePage.request
-    const response = await requestContext.get(url)
-    console.log(response)
+    const page = await browser.newPage({
+      acceptDownloads: true,
+      extraHTTPHeaders: {
+        'User-Agent': userAgent,
+        'referrer': 'https://www.coles.com.au/browse',
+      },
 
-    const data = await response.json()
+      javaScriptEnabled: true,
+    })
+    pages.push(page)
 
-    return data
+    await page.setViewportSize({ width: 1920, height: 1080 })
+    await page.context().addCookies(cookies)
 
-    // const page = await browser.newPage({
-    //   acceptDownloads: true,
-    //   extraHTTPHeaders: {
-    //     'User-Agent': userAgent,
-    //     'referrer': 'https://www.coles.com.au/browse',
-    //   },
+    // await page.(userAgent)
+    // await page.setRequestInterception(true)
 
-    //   javaScriptEnabled: true,
+    // // Only allow relavents types of requests
+    // page.on('request', (req) => {
+    //   if (blockedContent.includes(req.resourceType())) {
+    //     return req.abort()
+    //   }
+    //   req.continue()
     // })
-    // pages.push(page)
 
-    // await page.setViewportSize({ width: 1920, height: 1080 })
-    // await page.context().addCookies(cookies)
+    await page.goto(url)
+    const content = await page.content()
+    if (content.includes('<title>Pardon Our Interruption</title>')) {
+      console.log(content)
+      throw new Error('Failed to fetch page')
+    }
 
-    // // await page.(userAgent)
-    // // await page.setRequestInterception(true)
-
-    // // // Only allow relavents types of requests
-    // // page.on('request', (req) => {
-    // //   if (blockedContent.includes(req.resourceType())) {
-    // //     return req.abort()
-    // //   }
-    // //   req.continue()
-    // // })
-
-    // await page.goto(url)
-    // const content = await page.content()
-    // if (content.includes('<title>Pardon Our Interruption</title>')) {
-    //   console.log(content)
-    //   throw new Error('Failed to fetch page')
-    // }
-
-    // return page
+    return page
   }
 
   const close = async () => {
