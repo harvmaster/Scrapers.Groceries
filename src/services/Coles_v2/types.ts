@@ -30,7 +30,7 @@ export type ColesInterface = {
   close: () => Promise<void>;
 }
 
-type ImageUri = {
+export type ImageUri = {
   altText: string;
   type: string;
   uri: string;

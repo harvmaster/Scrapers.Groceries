@@ -1,50 +1,55 @@
-import { CATEGORIES_SITEMAP } from "./Coles"
+import type { Scraper, ScrapingCallbacks, Product, ScraperOptions } from '../types'
 
 import createColesInterface from "./utils/createColesInstance"
 
-import extractCategory from "./utils/categories/extractCategory"
-import extractCategoryURL from "./utils/categories/extractCategoryURL"
-
 import getSentryVersion from "./utils/sentry/getSentryVersion"
+
+import getCategories from "./utils/categories/getCategories"
 import createCategoryScraper from "./utils/categories/createCategoryScraper"
-import extractCategoriesSitemap from "./utils/categories/extractCategoriesSitemap"
 
-const dedupe = <T>(arr: T[]) => Array.from(new Set(arr))
+import useProgressTracker from "../../lib/useProgressTracker"
+import createCallbackHandler from '../../lib/callbackHandler'
 
-export const scrapeColes = async () => {
+
+export const scrapeColes: Scraper = async (options?: Partial<ScraperOptions>): Promise<Product[]> => {
+  const callbacks = createCallbackHandler(options?.callbacks || [])
+  
+  callbacks.onStart?.()
+
   const coles = await createColesInterface()
   
   try {
     const sentryVersion = await getSentryVersion(coles.page);
 
-    const categoryScraper = createCategoryScraper(coles.fetch, sentryVersion)
+    const categoryScraper = createCategoryScraper(coles.fetch, sentryVersion, options?.callbacks)
   
-    const rawcCategories = await extractCategoriesSitemap()
-    console.log(rawcCategories.length)
-  
-    const categoryURLs = rawcCategories.map(extractCategoryURL)
-    console.log(categoryURLs.length)
-  
-    const dedupedCategories = dedupe(categoryURLs).slice(0, 1)
-    console.log(dedupedCategories)
-  
-    const categoryFns = await Promise.all(dedupedCategories.map(async (categoryURL) => {
-      const category = extractCategory(categoryURL)
+    const categories = getCategories()
+    const limitedCategories = categories.slice(0, options?.limit)
+
+    const categoryFns = await Promise.all(limitedCategories.map(async (category) => {
       return categoryScraper(category)
     }))
-  
+
     const allFns = categoryFns.flat()
+    
+    const trackProgress = useProgressTracker(allFns.length, callbacks.onProgress)
   
     const results = await Promise.all(allFns.map(async (fn) => {
-      return fn()
-    }))
+      const res = await fn()
+      trackProgress()
+      return res
+    })).then((results) => results.flat())
   
     console.log(results)
+
+    callbacks.onFinish?.(results)
   
     return results
   } catch (err) {
     console.error(err)
+    callbacks.onError?.(err as Error)
     await coles.close()
+    return []
   }
 }
 
