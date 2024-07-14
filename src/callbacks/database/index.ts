@@ -1,5 +1,5 @@
 import database from "../../lib/database";
-import type { ScrapingCallbacks, Product } from "../../services/Woolworths";
+import type { ScrapingCallbacks, Product } from "../../services/types";
 
 const createDatabaseCallbacks = (jobId: string, retailer: string): Partial<ScrapingCallbacks> => {
 
@@ -7,7 +7,7 @@ const createDatabaseCallbacks = (jobId: string, retailer: string): Partial<Scrap
     database.insert(data, retailer, jobId)
   }
   
-  const onProductSuccess = (product: Product): void => {
+  const onProduct = (product: Product): void => {
     addProduct(product)
   }
 
@@ -24,7 +24,7 @@ const createDatabaseCallbacks = (jobId: string, retailer: string): Partial<Scrap
   }
 
   const databaseCallbacks = {
-    onProductSuccess,
+    onProduct,
     onProgress,
     onError,
     onFinish

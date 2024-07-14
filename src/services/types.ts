@@ -51,8 +51,13 @@ export type SitemapCallbacks = {
   onSitemapError: (error: Error, meta?: unknown) => void;
 }
 
+export type EndpointCallbacks = {
+  onEndpoints: (endpoints: string[], meta?: unknown) => void;
+}
+
 export type ScrapingCallbacks = BasicScrapingCallbacks 
                                 & FetchCallbacks
                                 & ProductCallbacks
                                 & ProductCallbackCreator
                                 & SitemapCallbacks
+                                & EndpointCallbacks

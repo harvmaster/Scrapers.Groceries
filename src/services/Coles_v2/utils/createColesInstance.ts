@@ -69,7 +69,13 @@ export const useFetch = (page: Page, callbacks?: ScrapingCallbacks) => {
     const fetchPage = await createPreparedPage(browser)
 
     // Go to the URL
-    await fetchPage.goto(url)
+    try {
+      await fetchPage.goto(url)
+    } catch (err) {
+      callbacks?.onFetchError?.(err as Error, { url })
+      // throw err
+      return {}
+    }
 
     // Check if the page is rate limited. Send an error if it is
     if (await isRateLimited(fetchPage)) {

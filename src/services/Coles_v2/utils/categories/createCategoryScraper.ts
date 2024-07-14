@@ -28,7 +28,7 @@ export const createCategoryScraper = (fetch: (url: string) => Promise<unknown>, 
 
         const data = await fetch(url) as CategoryResponse;
 
-        const productPromises = data.pageProps.searchResults.results.map((product: ColesProduct) => {
+        const productPromises = data?.pageProps?.searchResults?.results.map((product: ColesProduct) => {
           return processProduct(product, productCallbacks)
         })
 

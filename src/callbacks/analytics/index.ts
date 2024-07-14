@@ -1,5 +1,5 @@
 import analytics from "../../lib/analytics";
-import type { WoolworthsProduct, ProductDetailsURL, ShopProductURL, ScrapingCallbacks, Product } from "../../services/Woolworths";
+import type { ScrapingCallbacks, Product } from "../../services/types";
 
 type AnalyticsData = {
   description: string;
@@ -48,9 +48,9 @@ const createAnalyticsCallbacks = (jobId: string): Partial<ScrapingCallbacks> => 
     })
   }
   
-  const onProductURLS = (data: ShopProductURL[]): void => {
+  const onEndpoints = (data: string[]): void => {
     addAnalytics({
-      description: 'product_urls_extracted',
+      description: 'endpoints_extracted',
       status: 'success',
       data: {
         items: data,
@@ -61,10 +61,10 @@ const createAnalyticsCallbacks = (jobId: string): Partial<ScrapingCallbacks> => 
   
   // Bit complicated because we need to store the productURL for the product, but I dont want to pass it as a variable to onProductSuccess and onProductError because I also want to be able to time it
   const createProductAnalyticsHandlers = () => {
-    let productURL: ProductDetailsURL
+    let productURL: string
     let startTime: Date
   
-    const beforeProduct = (url: ProductDetailsURL): void => {
+    const beforeProductRequest = (url: string): void => {
       productURL = url
       startTime = new Date()
     }
@@ -118,11 +118,22 @@ const createAnalyticsCallbacks = (jobId: string): Partial<ScrapingCallbacks> => 
     }
   
     return {
-      beforeProduct,
+      beforeProductRequest,
       onRawProduct,
       onProductSuccess,
       onProductError
     }
+  }
+
+  const onFetchError = (error: Error, meta: unknown): void => {
+    addAnalytics({
+      description: 'fetch_error',
+      status: 'error',
+      data: {
+        error,
+        meta
+      }
+    })
   }
 
   const onStart = (): void => {
@@ -166,8 +177,9 @@ const createAnalyticsCallbacks = (jobId: string): Partial<ScrapingCallbacks> => 
   const analyticCallbacks = {
     onSitemap,
     onSitemapError,
-    onProductURLS,
+    onEndpoints,
     generateProductCallbacks: createProductAnalyticsHandlers,
+    onFetchError,
     onStart,
     onProgress,
     onError,

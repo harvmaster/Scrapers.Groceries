@@ -17,6 +17,8 @@ export const processProduct = async (product: ColesProduct, callbacks?: Partial<
   
     const productURL = `${product.description.toLocaleLowerCase().replace(/ /g, '-')}-${product.id}`
     const barcode = await getProductBarcode(product.id)
+
+    const pricing = product.availability ? product.pricing : { now: 0, was: 0, unit: { ofMeasureType: 'unknown' } }
   
     const newProduct: Product = {
       retailer_id: 'coles',
@@ -26,9 +28,9 @@ export const processProduct = async (product: ColesProduct, callbacks?: Partial<
       brand: product.brand,
       description: product.description,
       images: formatImages(product.imageUris),
-      price: product.pricing.now,
-      was_price: product.pricing.was || product.pricing.now,
-      unit: product.pricing.unit.ofMeasureType,
+      price: pricing.now,
+      was_price: pricing.was || pricing.now,
+      unit: pricing.unit?.ofMeasureType || 'unknown',
       category: product.onlineHeirs[0]?.category,
       subcategory: product.onlineHeirs[0]?.subCategory
     }

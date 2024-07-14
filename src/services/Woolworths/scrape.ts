@@ -1,4 +1,5 @@
-import type { WoolworthsProduct, ProductCallbacks, ScrapingCallbacks, Product } from './types';
+import type { Product, ScrapingCallbacks, ProductCallbacks } from '../types'
+import type { WoolworthsProduct } from './types';
 
 import { sitemaps } from './Woolworths';
 
@@ -33,7 +34,7 @@ export const scrapeWoolworths = async (limit?: number, ...callbackGroups: Partia
   const productURLs = (await Promise.all(sitemapPromises)).flat()
 
   // Call the callback for the product URLs. This can be used for analytics, progress tracking, etc.
-  callbacks.onProductURLS?.(productURLs)
+  callbacks.onEndpoints?.(productURLs)
   
   // Limit the number of products to scrape
   const limitedProducts = productURLs.slice(0, limit)

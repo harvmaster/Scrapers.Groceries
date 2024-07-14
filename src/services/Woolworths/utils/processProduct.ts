@@ -1,4 +1,5 @@
-import type { WoolworthsProduct, ProductCallbacks, ShopProductURL, Product } from "../types";
+import type { ProductCallbacks } from "../../types";
+import type { WoolworthsProduct, ShopProductURL, Product } from "../types";
 
 import getStockCode from "./getStockCode";
 import getDetailsURL from "./getDetailsURL";
@@ -14,7 +15,7 @@ export const processProduct = async (productURL: ShopProductURL, callbacks?: Par
   const detailsURL = getDetailsURL(stockCode)
 
   // Call the callback for the product. This can be used for analytics, progress tracking, etc.
-  callbacks?.beforeProduct?.(detailsURL)
+  callbacks?.beforeProductRequest?.(detailsURL)
 
   // Scrape the product details and call the callbacks. Return the product
   try {
@@ -23,7 +24,7 @@ export const processProduct = async (productURL: ShopProductURL, callbacks?: Par
 
     // Format the product to standard shape and call the callback
     const formattedProduct = formatProduct(productURL, product)
-    callbacks?.onProductSuccess?.(formattedProduct)
+    callbacks?.onProduct?.(formattedProduct)
 
     return formattedProduct
   } catch  (err) {
