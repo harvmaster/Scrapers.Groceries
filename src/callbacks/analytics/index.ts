@@ -71,7 +71,7 @@ const createAnalyticsCallbacks = (jobId: string): Partial<ScrapingCallbacks> => 
 
     const onRawProduct = (product: unknown): void => {
       const duration = new Date().getTime() - startTime.getTime()
-  
+
       addAnalytics({
         description: 'raw_product_scraped',
         status: 'success',
@@ -83,9 +83,9 @@ const createAnalyticsCallbacks = (jobId: string): Partial<ScrapingCallbacks> => 
       })
     }
   
-    const onProductSuccess = (product: Product): void => {
+    const onProduct = (product: Product): void => {
       const duration = new Date().getTime() - startTime.getTime()
-      onProduct({ status: 'success', data: product })
+      storeProduct({ status: 'success', data: product })
   
       addAnalytics({
         description: 'product_scraped',
@@ -100,7 +100,7 @@ const createAnalyticsCallbacks = (jobId: string): Partial<ScrapingCallbacks> => 
   
     const onProductError = (error: Error): void => {
       const duration = new Date().getTime() - startTime.getTime()
-      onProduct({ status: 'error', data: error })
+      storeProduct({ status: 'error', data: error })
   
       addAnalytics({
         description: 'product_scraped',
@@ -113,14 +113,14 @@ const createAnalyticsCallbacks = (jobId: string): Partial<ScrapingCallbacks> => 
       })
     }
 
-    const onProduct = (data: ScrapedResult) => {
+    const storeProduct = (data: ScrapedResult) => {
       scraped.push(data)
     }
   
     return {
       beforeProductRequest,
       onRawProduct,
-      onProductSuccess,
+      onProduct,
       onProductError
     }
   }
@@ -130,7 +130,7 @@ const createAnalyticsCallbacks = (jobId: string): Partial<ScrapingCallbacks> => 
       description: 'fetch_error',
       status: 'error',
       data: {
-        error,
+        error: JSON.stringify(error),
         meta
       }
     })
@@ -157,7 +157,7 @@ const createAnalyticsCallbacks = (jobId: string): Partial<ScrapingCallbacks> => 
       description: 'error',
       status: 'error',
       data: {
-        error
+        error: JSON.stringify(error),
       }
     })
   }

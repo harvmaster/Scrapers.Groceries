@@ -16,6 +16,8 @@ export const createCategoryScraper = (fetch: (url: string) => Promise<unknown>, 
 
     const totalPages = Math.ceil(totalResults / pageSize)
 
+    console.log(`Total pages for ${category}: ${totalPages}`)
+
     // Create fns for each page
     const fns = Array.from({ length: totalPages }, (_, i) => {
       return async () => {
@@ -30,7 +32,7 @@ export const createCategoryScraper = (fetch: (url: string) => Promise<unknown>, 
 
         const productPromises = data?.pageProps?.searchResults?.results.map((product: ColesProduct) => {
           return processProduct(product, productCallbacks)
-        })
+        }) || []
 
         const products = await Promise.all(productPromises)
 

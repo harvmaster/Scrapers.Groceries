@@ -17,7 +17,7 @@ export const scrapeColes: Scraper = async (options?: Partial<ScraperOptions>): P
   
   callbacks.onStart?.()
 
-  const rateLimiter = new RateLimitQueue(5, 100)
+  const rateLimiter = new RateLimitQueue(5, 250)
   
   const coles = await createColesInterface()
   try {
@@ -51,7 +51,10 @@ export const scrapeColes: Scraper = async (options?: Partial<ScraperOptions>): P
     return results
   } catch (err) {
     console.error(err)
+    
     callbacks.onError?.(err as Error)
+    callbacks.onFinish?.([])
+
     await coles.close()
     return []
   }

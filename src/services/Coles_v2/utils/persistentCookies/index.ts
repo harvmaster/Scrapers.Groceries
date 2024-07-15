@@ -18,7 +18,7 @@ export const saveCookies = (cookies: Cookie[]) => {
 export const loadCookies = (): Cookie[] => {
   const pwd = process.cwd();
   const path = `${pwd}/src/services/Coles_v2/utils/persistentCookies/${cookiePath}`;
-  console.log(path)
+  // console.log(path)
 
   const cookiesString = fs.readFileSync(path, 'utf-8');
   const cookies = JSON.parse(cookiesString).cookies;

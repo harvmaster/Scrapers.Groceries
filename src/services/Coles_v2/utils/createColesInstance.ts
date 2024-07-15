@@ -55,7 +55,7 @@ export const createColesInterface = async () => {
 }
 
 export const useFetch = (page: Page, callbacks?: ScrapingCallbacks) => {
-  const fetchPage = async (url: string) => {
+  const useFetchPage = async (url: string, isRetry = false) => {
     // Get the browser from the page and make sure its not null
     const browser = page.context().browser()
     if (!browser) {
@@ -74,7 +74,10 @@ export const useFetch = (page: Page, callbacks?: ScrapingCallbacks) => {
     } catch (err) {
       callbacks?.onFetchError?.(err as Error, { url })
       // throw err
-      return {}
+      await fetchPage.close()
+
+      console.log(`Retrying fetch: ${url}`)
+      return useFetchPage(url, true)
     }
 
     // Check if the page is rate limited. Send an error if it is
@@ -87,11 +90,29 @@ export const useFetch = (page: Page, callbacks?: ScrapingCallbacks) => {
     // Get HTML content of the page
     const content = await fetchPage.content()
 
-    // Remove HTML and get JSON data
-    const json = JSON.parse(content.replace(/<[^>]*>?/gm, ''))
+    let json
+    const jsonText = content.replace(/<[^>]*>?/gm, '')
+    try {
+      // Remove HTML and get JSON data
+      json = JSON.parse(jsonText)
+    } catch (err) {
+      // Call the onFetchError callback
+      callbacks?.onFetchError?.(err as Error, { url, content, jsonText })
+      console.log(content)
+      console.log(`Error parsing JSON from ${url}`, err)
 
+      await fetchPage.close()
+
+      if (isRetry) {
+        return {}
+      }
+
+      console.log(`Retrying fetch: ${url}`)
+      return useFetchPage(url, true)
+    }
+    
     // Close the page
-    await page.close()
+    await fetchPage.close()
 
     // Call the onFetchSuccess callback
     callbacks?.onFetchSuccess(json)
@@ -99,7 +120,7 @@ export const useFetch = (page: Page, callbacks?: ScrapingCallbacks) => {
     return json
   }
 
-  return fetchPage
+  return useFetchPage
 }
 
 export const usePage = (page: Page) => {
