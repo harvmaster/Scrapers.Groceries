@@ -57,10 +57,7 @@ export const createColesInterface = async () => {
 export const useFetch = (page: Page, callbacks?: ScrapingCallbacks) => {
   const useFetchPage = async (url: string, isRetry = false) => {
     // Get the browser from the page and make sure its not null
-    const browser = page.context().browser()
-    if (!browser) {
-      throw new Error('Browser is not available')
-    }
+    const browser = getBrowser(page)
 
     // Call the beforeFetch callback
     callbacks?.beforeFetch?.(url)
@@ -72,18 +69,19 @@ export const useFetch = (page: Page, callbacks?: ScrapingCallbacks) => {
     try {
       await fetchPage.goto(url)
     } catch (err) {
-      callbacks?.onFetchError?.(err as Error, { url })
-      // throw err
+      // Catch any errors and call the onFetchError callback. Then retry the fetch
+      callbacks?.onFetchError?.(err as Error, { url, retry: isRetry })
+    
       await fetchPage.close()
 
-      console.log(`Retrying fetch: ${url}`)
       return useFetchPage(url, true)
     }
 
     // Check if the page is rate limited. Send an error if it is
     if (await isRateLimited(fetchPage)) {
       const error = new Error(`Rate limited fetching ${url}`)
-      callbacks?.onFetchError?.(error)
+      callbacks?.onFetchError?.(error, { url })
+
       throw error
     }
 
@@ -97,17 +95,14 @@ export const useFetch = (page: Page, callbacks?: ScrapingCallbacks) => {
       json = JSON.parse(jsonText)
     } catch (err) {
       // Call the onFetchError callback
-      callbacks?.onFetchError?.(err as Error, { url, content, jsonText })
-      console.log(content)
-      console.log(`Error parsing JSON from ${url}`, err)
+      callbacks?.onFetchError?.(err as Error, { url, content, jsonText, retry: isRetry })
 
       await fetchPage.close()
 
-      if (isRetry) {
-        return {}
-      }
+      // If its a retry, return an empty object
+      if (isRetry) return {}
 
-      console.log(`Retrying fetch: ${url}`)
+      // Retry the fetch
       return useFetchPage(url, true)
     }
     
@@ -134,6 +129,15 @@ const isRateLimited = async (page: Page) => {
   }
   
   return false
+}
+
+const getBrowser = (page: Page) => {
+  const browser = page.context().browser()
+  if (!browser) {
+    throw new Error('Browser is not available')
+  }
+
+  return browser
 }
 
 export default createColesInterface
