@@ -1,29 +1,32 @@
 import { scrapeWoolworths } from './services/Woolworths'
-import scrapeColes from './services/Coles_v2/scrape';
+import scrapeColes from './services/Coles/scrape';
 
 import createAnalyticsCallbacks from './callbacks/analytics';
 import createDatabaseCallbacks from './callbacks/database';
+import type { Product, Scraper } from './services/types';
 
 const scrape = async () => {
-  // const jobId = Math.random().toString(36).substring(7)
+  const scrapers = [
+    createScraper('Woolworths', scrapeWoolworths),
+    createScraper('Coles', scrapeColes)
+  ]
 
-  // const analyticCallbacks = createAnalyticsCallbacks(jobId)
-  // const databaseCallbacks = createDatabaseCallbacks(jobId, 'woolworths')
+  const results = await Promise.all(scrapers.map(scraper => scraper()))
+  console.log(`Finished Scraping ${results.flat().length} products`)
+}
 
-  // await scrapeWoolworths(undefined, analyticCallbacks, databaseCallbacks)
+const createScraper = (name: string, scraper: Scraper): () => Promise<Product[]> => {
+  const jobId = Math.random().toString(36).substring(7)
 
-  const colesJob = Math.random().toString(36).substring(7)
+  const analyticCallbacks = createAnalyticsCallbacks(jobId)
+  const databaseCallbacks = createDatabaseCallbacks(jobId, name)
 
-  const colesAnalytics = createAnalyticsCallbacks(colesJob)
-  const colesDatabase = createDatabaseCallbacks(colesJob, 'coles')
-
-  await scrapeColes({
+  return async () => scraper({
     callbacks: [
-      colesAnalytics,
-      colesDatabase
+      analyticCallbacks,
+      databaseCallbacks
     ]
   })
-  
 }
 
 scrape()

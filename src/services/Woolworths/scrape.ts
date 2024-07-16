@@ -1,4 +1,4 @@
-import type { Product, ScrapingCallbacks, ProductCallbacks } from '../types'
+import type { Product, ScrapingCallbacks, ProductCallbacks, ScraperOptions } from '../types'
 import type { WoolworthsProduct } from './types';
 
 import { sitemaps } from './Woolworths';
@@ -22,7 +22,10 @@ const createProgressTracker = (total: number, callback?: (value: number) => void
   }
 }
 
-export const scrapeWoolworths = async (limit?: number, ...callbackGroups: Partial<ScrapingCallbacks>[]): Promise<Product[]> => {
+export const scrapeWoolworths = async (options: Partial<ScraperOptions>): Promise<Product[]> => {
+  const callbackGroups = options.callbacks || []
+  const limit = options.limit
+
   // group the callbacks so that we can call them all. 
   // Eg: [{ onProgress: onProgress1 }, { onProgress: onProgress2 }] => { onProgress: () => [onProgress1(), onProgress2()] }
   const callbacks = createCallbackHandler(callbackGroups)
@@ -76,125 +79,3 @@ export const scrapeWoolworths = async (limit?: number, ...callbackGroups: Partia
 }
 
 export default scrapeWoolworths
-
-
-// type ArrayValue<T> = { [K in keyof T]: T[K][] }
-// type GroupedScraperCallbacks = ArrayValue<ScrapingCallbacks>
-
-// export class WoolworthsScraper {
-//   private handlers: Required<GroupedScraperCallbacks>
-
-//   constructor(private limit?: number) {
-//     this.handlers = {
-//       onStart: [],
-//       onProgress: [],
-//       onError: [],
-//       onFinish: [],
-//       onProductURLS: [],
-//       beforeProduct: [],
-//       onProductSuccess: [],
-//       onProductError: [],
-//       onSitemap: [],
-//       onSitemapError: [],
-//       generateProductCallbacks: []
-//     }
-//   }
-
-//   addHandlers(handlers: ScrapingCallbacks) {
-//     for (const key in handlers) {
-//       if (Object.prototype.hasOwnProperty.call(handlers, key)) {
-//         const handler = handlers[key as keyof ScrapingCallbacks];
-//         if (handler) {
-//           (this.handlers[key as keyof GroupedScraperCallbacks] as any[]).push(handler);
-//         }
-//       }
-//     }
-//   }
-
-//   onStart(callback: ScrapingCallbacks['onStart']) {
-//     this.handlers.onStart.push(callback)
-//   }
-
-//   onProgress(callback: ScrapingCallbacks['onProgress']) {
-//     this.handlers.onProgress.push(callback)
-//   }
-
-//   onError(callback: ScrapingCallbacks['onError']) {
-//     this.handlers.onError.push(callback)
-//   }
-
-//   onFinish(callback: ScrapingCallbacks['onFinish']) {
-//     this.handlers.onFinish.push(callback)
-//   }
-
-//   onProductURLS(callback: ScrapingCallbacks['onProductURLS']) {
-//     this.handlers.onProductURLS.push(callback)
-//   }
-
-//   beforeProduct(callback: ScrapingCallbacks['beforeProduct']) {
-//     this.handlers.beforeProduct.push(callback)
-//   }
-
-//   onProductSuccess(callback: ScrapingCallbacks['onProductSuccess']) {
-//     this.handlers.onProductSuccess.push(callback)
-//   }
-
-//   onProductError(callback: ScrapingCallbacks['onProductError']) {
-//     this.handlers.onProductError.push(callback)
-//   }
-
-//   onSitemap(callback: ScrapingCallbacks['onSitemap']) {
-//     this.handlers.onSitemap.push(callback)
-//   }
-
-//   onSitemapError(callback: ScrapingCallbacks['onSitemapError']) {
-//     this.handlers.onSitemapError.push(callback)
-//   }
-
-//   addProductCallbackGenerator(callback: ScrapingCallbacks['generateProductCallbacks']) {
-//     this.handlers.generateProductCallbacks.push(callback)
-//   }
-
-//   // generateProductCallbacks(callback: ScrapingCallbacks['generateProductCallbacks']) {
-//   //   this.handlers.generateProductCallbacks.push(callback)
-//   // }
-
-
-//   private generateProductCallbacks(): ProductCallbacks {    
-//     const generatedGroups = this.handlers.generateProductCallbacks.map(cb => cb())
-//     const baseHandlers = {
-//       onProductError: this.handlers.onProductError,
-//       onProductSuccess: this.handlers.onProductSuccess,
-//       beforeProduct: this.handlers.beforeProduct
-//     }
-
-//     const handlers = createCallbackHandler([ ...generatedGroups, ...baseHandlers ])
-
-//     generatedGroups.forEach(cb => {
-//       Object.entries(cb).forEach(([key, value]) => {
-//         if (!handlers[key]) {
-//           handlers[key] = []
-//         }
-  
-//         handlers[key].push(value)
-//       })
-//     })
-
-//     return {
-//       onProductError: (error) => {
-//         this.handlers.onProductError.forEach(cb => cb(error))
-//       },
-//       onProductSuccess: (product) => {
-//         this.handlers.onProductSuccess.forEach(cb => cb(product))
-//       },
-//       beforeProduct: (url) => {
-//         this.handlers.beforeProduct.forEach(cb => cb(url))
-//       }
-//     }
-//   }
-  
-
-
-// }
-
-

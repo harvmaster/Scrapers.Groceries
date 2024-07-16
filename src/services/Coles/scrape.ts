@@ -43,8 +43,6 @@ export const scrapeColes: Scraper = async (options?: Partial<ScraperOptions>): P
       trackProgress()
       return res
     })).then((results) => results.flat())
-  
-    console.log(results)
 
     callbacks.onFinish?.(results)
   
