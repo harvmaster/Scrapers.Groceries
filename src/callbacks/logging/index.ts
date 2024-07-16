@@ -1,8 +1,5 @@
 import type { ScrapingCallbacks } from "../../services/types";
 
-import {  } from 'bun:ffi';
-
-
 type StoreSummaries = Record<string, StoreSummary>;
 
 type StoreSummary = {
@@ -25,7 +22,7 @@ export const createLoggingCallbacks = () => {
     }, 0);
 
     const storeProgresses = Object.values(summary).map(store => {
-      return `${store.name}: ${store.progress}%`;
+      return `${store.name}: ${store.products} Products (${store.progress}%)`;
     }).join(' | ');
 
     process.stdout.clearLine(0);

@@ -1,10 +1,23 @@
 import database from "../../lib/database";
 import type { ScrapingCallbacks, Product } from "../../services/types";
 
-const createDatabaseCallbacks = (jobId: string, retailer: string): Partial<ScrapingCallbacks> => {
+type DatabaseOptions = {
+  retailer: string;
+  outputDir: string;
+  batchId: string;
+}
 
+const defaultOptions: DatabaseOptions = {
+  retailer: '',
+  outputDir: '',
+  batchId: ''
+}
+
+const createDatabaseCallbacks = (scraperId: string, options?: Partial<DatabaseOptions>): Partial<ScrapingCallbacks> => {
+  options = { ...defaultOptions, ...options }
+ 
   const addProduct = (data: Product): void => {
-    database.insert(data, retailer, jobId)
+    database.insert(data, options.retailer as string, scraperId)
   }
   
   const onProduct = (product: Product): void => {
@@ -16,7 +29,7 @@ const createDatabaseCallbacks = (jobId: string, retailer: string): Partial<Scrap
   }
   
   const onFinish = (): void => {
-    database.toJSONFile(jobId)
+    database.toJSONFile(options.batchId || '', scraperId, options?.outputDir)
   }
 
   const databaseCallbacks = {

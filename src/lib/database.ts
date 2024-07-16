@@ -76,12 +76,33 @@ class ProductDatabase {
     await this.db.run('DELETE FROM products')
   }
 
-  async toJSONFile (jobId: string) {
-    const date = new Date()
-    const dateString = `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}-${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`
-
+  async toJSONFile (batchId: string, jobId: string, outputDir?: string) {
     const data = await this.get(jobId)
-    fs.writeFileSync(`logs/${jobId}-${dateString}/products-${jobId}.json`, JSON.stringify(data, null, 2))
+
+    let path = `logs`
+
+    if (!fs.existsSync(path)) {
+      fs.mkdirSync(path)
+    }
+
+    const totalLogs = fs.readdirSync(path).length
+
+    path = `${path}/${batchId}-${totalLogs}`
+
+    if (!fs.existsSync(path)) {
+      path = `logs/${batchId}-${totalLogs + 1}`
+      fs.mkdirSync(path)
+    }
+
+    if (outputDir) {
+      path = `${path}/${outputDir}`
+      
+      if (!fs.existsSync(path)) {
+        fs.mkdirSync(path)
+      }
+    }
+
+    fs.writeFileSync(`${path}/products-${jobId}.json`, JSON.stringify(data, null, 2))
   }
 }
 

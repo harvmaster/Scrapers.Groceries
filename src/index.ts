@@ -7,6 +7,7 @@ import createAnalyticsCallbacks from './callbacks/analytics';
 import createDatabaseCallbacks from './callbacks/database';
 import createLoggingCallbacks from './callbacks/logging';
 
+const batchId = Math.random().toString(36).substring(7)
 
 const scrape = async () => {
   const scrapers = [
@@ -19,13 +20,21 @@ const scrape = async () => {
 }
 
 const createScraper = (name: string, scraper: Scraper): () => Promise<Product[]> => {
-  const jobId = Math.random().toString(36).substring(7)
+  const scraperId = Math.random().toString(36).substring(7)
 
-  const analyticCallbacks = createAnalyticsCallbacks(jobId)
-  const databaseCallbacks = createDatabaseCallbacks(jobId, name)
+  const analyticCallbacks = createAnalyticsCallbacks(scraperId, {
+    outputDir: name,
+    batchId
+  })
+  const databaseCallbacks = createDatabaseCallbacks(scraperId, {
+    retailer: name,
+    outputDir: name,
+    batchId
+  })
   const loggingCallbacks = createLoggingCallbacks(name)
 
   return async () => scraper({
+    limit: 2,
     callbacks: [
       analyticCallbacks,
       databaseCallbacks,

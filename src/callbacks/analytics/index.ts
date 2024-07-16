@@ -13,7 +13,19 @@ type ScrapedResult = {
   data: Product | Error;
 }
 
-const createAnalyticsCallbacks = (jobId: string): Partial<ScrapingCallbacks> => {
+type AnalyitcsOptions = {
+  outputDir: string;
+  batchId: string;
+}
+
+const defaultOptions: AnalyitcsOptions = {
+  outputDir: '',
+  batchId: ''
+}
+
+const createAnalyticsCallbacks = (scraperId: string, options?: Partial<AnalyitcsOptions>): Partial<ScrapingCallbacks> => {
+  options = { ...defaultOptions, ...options }
+
   let startTime: Date;
   let finishTime: Date;
   
@@ -22,9 +34,9 @@ const createAnalyticsCallbacks = (jobId: string): Partial<ScrapingCallbacks> => 
   const addAnalytics = (data: AnalyticsData): void => {
     analytics.insert({
       timestamp: new Date(),
-      jobId,
+      scraperId,
       ...data
-    }, jobId)
+    }, scraperId)
   }
 
   const onSitemap = (data: string): void => {
@@ -166,7 +178,7 @@ const createAnalyticsCallbacks = (jobId: string): Partial<ScrapingCallbacks> => 
       data: {}
     })
 
-    analytics.toJSONFile(jobId)
+    analytics.toJSONFile(options.batchId || '', scraperId, options?.outputDir)
   }
 
   const analyticCallbacks = {
