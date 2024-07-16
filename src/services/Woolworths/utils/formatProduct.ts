@@ -1,4 +1,5 @@
 import type { WoolworthsProduct, Product } from "../types";
+import formatText from "../../../lib/text";
 
 export const formatProduct = (url: string, product: WoolworthsProduct): Product => {
   return {
@@ -7,7 +8,7 @@ export const formatProduct = (url: string, product: WoolworthsProduct): Product 
     barcode: product.Barcode,
 
     name: product.Name,
-    description: product.Description,
+    description: formatText(product.Description),
     brand: product.Brand,
 
     price: product.Price,

@@ -6,7 +6,7 @@ const cookiePath = 'cookies.json';
 
 export const saveCookies = (cookies: Cookie[]) => {
   const pwd = process.cwd();
-  const path = `${pwd}/src/services/Coles_v2/utils/persistentCookies/${cookiePath}`;
+  const path = `${pwd}/src/services/Coles/utils/persistentCookies/${cookiePath}`;
 
   const data = {
     cookies
@@ -17,7 +17,7 @@ export const saveCookies = (cookies: Cookie[]) => {
 
 export const loadCookies = (): Cookie[] => {
   const pwd = process.cwd();
-  const path = `${pwd}/src/services/Coles_v2/utils/persistentCookies/${cookiePath}`;
+  const path = `${pwd}/src/services/Coles/utils/persistentCookies/${cookiePath}`;
   // console.log(path)
 
   const cookiesString = fs.readFileSync(path, 'utf-8');

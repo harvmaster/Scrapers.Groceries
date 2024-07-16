@@ -107,7 +107,7 @@ const createAnalyticsCallbacks = (jobId: string): Partial<ScrapingCallbacks> => 
         status: 'error',
         data: {
           duration,
-          error,
+          error: JSON.stringify(error, Object.getOwnPropertyNames(error)),
           productURL
         }
       })
@@ -130,7 +130,7 @@ const createAnalyticsCallbacks = (jobId: string): Partial<ScrapingCallbacks> => 
       description: 'fetch_error',
       status: 'error',
       data: {
-        error: JSON.stringify(error),
+        error: JSON.stringify(error, Object.getOwnPropertyNames(error)),
         meta
       }
     })
@@ -146,18 +146,13 @@ const createAnalyticsCallbacks = (jobId: string): Partial<ScrapingCallbacks> => 
     })
   }
 
-  const onProgress = (progress: number): void => {
-    if (progress % 10 === 0) {
-      console.log(scraped.length, 'products scraped', scraped.filter(({ status }) => status === 'success').length, 'successes', scraped.filter(({ status }) => status === 'error').length, 'errors')
-    }
-  }
-
-  const onError = (error: Error): void => {
+  const onError = (error: Error, meta: unknown): void => {
     addAnalytics({
       description: 'error',
       status: 'error',
       data: {
-        error: JSON.stringify(error),
+        error: JSON.stringify(error, Object.getOwnPropertyNames(error)),
+        meta
       }
     })
   }
@@ -181,7 +176,6 @@ const createAnalyticsCallbacks = (jobId: string): Partial<ScrapingCallbacks> => 
     generateProductCallbacks: createProductAnalyticsHandlers,
     onFetchError,
     onStart,
-    onProgress,
     onError,
     onFinish
   }

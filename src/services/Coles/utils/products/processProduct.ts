@@ -2,6 +2,8 @@ import type { Product, ProductCallbacks } from "../../../types";
 import type { ColesProduct, ImageUri } from "../../types";
 import getProductBarcode from "./getProductBarcode";
 
+import formatText from "../../../../lib/text";
+
 
 const COLES_IMAGE_BASE_URL = 'https://www.coles.com.au/_next/image?url=https://productimages.coles.com.au/productimages'
 
@@ -26,7 +28,7 @@ export const processProduct = async (product: ColesProduct, callbacks?: Partial<
       barcode,
       name: product.name,
       brand: product.brand,
-      description: product.description,
+      description: formatText(product.description),
       images: formatImages(product.imageUris),
       price: pricing.now,
       was_price: pricing.was || pricing.now,

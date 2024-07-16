@@ -142,7 +142,7 @@ import type { ScrapingCallbacks } from '../../types';
 
 // export default createColesInterface
 
-class Coles {
+export class Coles {
   private pages: Page[] = []
 
   constructor (private browser: Browser, public page: Page, private callbacks?: Partial<ScrapingCallbacks>) {}
@@ -175,6 +175,11 @@ class Coles {
     return page
   }
 
+  private async closePage (page: Page) {
+    await page.close()
+    this.pages = this.pages.filter(p => p !== page)
+  }
+
   // Close all the pages and the browser
   public async close () {
     await Promise.all(this.pages.map(page => page.close()))
@@ -186,7 +191,12 @@ class Coles {
     const page = await this.createPage()
 
     const colesPage = new ColesPage(page, this.callbacks)
-    return colesPage.fetch(url)
+
+    const res = await  colesPage.fetch(url)
+
+    await this.closePage(page)
+
+    return res
   }
 
 }
@@ -201,9 +211,9 @@ class ColesPage {
     } catch (err) {
       this.callbacks?.onFetchError?.(err as Error, { url, retry: isRetry })
     
-      if (isRetry) return
+      if (isRetry) throw err
 
-      return this.goto(url, true)
+      return await this.goto(url, true)
     }
   }
 
@@ -212,30 +222,32 @@ class ColesPage {
     // Call the beforeFetch callback
     this.callbacks?.beforeFetch?.(url)
 
-    // Go to the URL
-    await this.goto(url)
+    try {
+      // Go to the URL
+      await this.goto(url)
+  
+      // Check if the page is rate limited. Send an error if it is
+      await this.handleRateLimit()
+  
+      // Parse the page
+      const res = await this.parsePage(isRetry)
 
-    // Check if the page is rate limited. Send an error if it is
-    await this.handleRateLimit()
+      // Run the onFetchSuccess callback
+      this.callbacks?.onFetchSuccess?.(res)
 
-    // Parse the page
-    return this.parsePage(isRetry)
-  }
-    
-
-  // Check if the page is rate limited
-  private async isRateLimited () {
-    const content = await this.page.content()
-    if (content.includes('<title>Pardon Our Interruption</title>')) {
-      return true
+      return res
+    } catch (err) {
+      // Retry is handled internally, so if we fail up here, just return an empty object.
+      // It'll be logged that the page failed, so best we can do is fail gracefully
+      return {}
     }
-    
-    return false
   }
 
   // if the page is rate limited, throw an error
   private async handleRateLimit () {
-    if (await this.isRateLimited()) {
+    const content = await this.page.content()
+
+    if (content.includes('<title>Pardon Our Interruption</title>')) {
       const url = this.page.url()
 
       const error = new Error(`Rate limited fetching ${url}`)
@@ -269,7 +281,7 @@ class ColesPage {
         return this.fetch(url, true)
       }
       
-      // If its a retry, return an empty object
+      // If its a retry, return an empty object. Fail gracefully
       return {}
     }
   }

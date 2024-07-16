@@ -4,7 +4,8 @@ import fs from 'fs';
 
 // export const extractCategoriesSitemap = async (fetch: (url: string) => Promise<Page>, sitemapUrl: CategoryMapUrl): Promise<SpecificCategoryURL[]> => {
   export const extractCategoriesSitemap = (): SpecificCategoryURL[] => {
-  const sitemap = fs.readFileSync(`./src/services/Coles/sitemaps/Categories_09-07-2024.xml`, 'utf8');
+  const pwd = process.cwd();
+  const sitemap = fs.readFileSync(`${pwd}/src/services/Coles/sitemap/Categories_09-07-2024.xml`, 'utf8');
 
   // Get the categories from the sitemap with puppeteer
   const categoryRegex = /<loc>([^<]+)<\/loc>/g;

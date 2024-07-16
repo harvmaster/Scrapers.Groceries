@@ -1,22 +1,26 @@
-import createCallbackHandler from "../../../../lib/callbackHandler";
 import type { ScrapingCallbacks } from "../../../types";
 import type { Category, CategoryResponse, ColesProduct, SentryVersionString } from "../../types";
-import processProduct from "../products/processProduct";
+import { Coles } from '../createColesInstance'
+
+import createCallbackHandler from "../../../../lib/callbackHandler";
+
 import createSentryCategoryURL from "../sentry/createSentryCategoryURL";
 
-export const createCategoryScraper = (fetch: (url: string) => Promise<unknown>, sentry: SentryVersionString, callbackGroups?: Partial<ScrapingCallbacks>[]) => {
+import processProduct from "../products/processProduct";
+
+export const createCategoryScraper = (browser: Coles, sentry: SentryVersionString, callbackGroups?: Partial<ScrapingCallbacks>[]) => {
   return async (category: Category) => {
 
     // Get the first page of the category to get the total number of pages needed
     const url = createSentryCategoryURL(category, 1, sentry);
-    const data = await fetch(url) as CategoryResponse;
+    const data = await browser.fetch(url) as CategoryResponse;
 
     const totalResults = data.pageProps.searchResults.noOfResults
     const pageSize = data.pageProps.searchResults.pageSize
 
     const totalPages = Math.ceil(totalResults / pageSize)
 
-    console.log(`Total pages for ${category}: ${totalPages}`)
+    const endpoints: string[] = []
 
     // Create fns for each page
     const fns = Array.from({ length: totalPages }, (_, i) => {
@@ -25,10 +29,11 @@ export const createCategoryScraper = (fetch: (url: string) => Promise<unknown>, 
         const productCallbacks = createCallbackHandler(productCallbackGroups || [])
 
         const url = createSentryCategoryURL(category, i + 1, sentry);
+        endpoints.push(url)
 
         productCallbacks?.beforeProductRequest?.(url)
 
-        const data = await fetch(url) as CategoryResponse;
+        const data = await browser.fetch(url) as CategoryResponse;
 
         const productPromises = data?.pageProps?.searchResults?.results.map((product: ColesProduct) => {
           return processProduct(product, productCallbacks)
@@ -40,7 +45,7 @@ export const createCategoryScraper = (fetch: (url: string) => Promise<unknown>, 
       }
     })
 
-    return fns
+    return { categoryPageScrapers: fns, endpoints }
   }
 }
 

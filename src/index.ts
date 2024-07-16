@@ -1,9 +1,12 @@
+import type { Product, Scraper } from './services/types';
+
 import { scrapeWoolworths } from './services/Woolworths'
 import scrapeColes from './services/Coles/scrape';
 
 import createAnalyticsCallbacks from './callbacks/analytics';
 import createDatabaseCallbacks from './callbacks/database';
-import type { Product, Scraper } from './services/types';
+import createLoggingCallbacks from './callbacks/logging';
+
 
 const scrape = async () => {
   const scrapers = [
@@ -20,11 +23,13 @@ const createScraper = (name: string, scraper: Scraper): () => Promise<Product[]>
 
   const analyticCallbacks = createAnalyticsCallbacks(jobId)
   const databaseCallbacks = createDatabaseCallbacks(jobId, name)
+  const loggingCallbacks = createLoggingCallbacks(name)
 
   return async () => scraper({
     callbacks: [
       analyticCallbacks,
-      databaseCallbacks
+      databaseCallbacks,
+      loggingCallbacks
     ]
   })
 }

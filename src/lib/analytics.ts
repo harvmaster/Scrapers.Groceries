@@ -28,9 +28,12 @@ class Analytics {
     await this.db.run('DELETE FROM analytics')
   }
 
-  async toJSONFile (jobId?: string) {
+  async toJSONFile (jobId: string) {
+    const date = new Date()
+    const dateString = `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}-${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`
+
     const data = await this.get(jobId)
-    fs.writeFileSync(`logs/analytics${jobId ? "-"+jobId : ''}.json`, JSON.stringify(data, null, 2))
+    fs.writeFileSync(`logs/${jobId}-${dateString}/analytics-${jobId}.json`, JSON.stringify(data, null, 2))
   }
 }
 

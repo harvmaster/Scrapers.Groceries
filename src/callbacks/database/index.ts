@@ -11,10 +11,6 @@ const createDatabaseCallbacks = (jobId: string, retailer: string): Partial<Scrap
     addProduct(product)
   }
 
-  const onProgress = (progress: number): void => {
-    console.log(`completed ${progress}`)
-  }
-
   const onError = (error: Error): void => {
     console.error(error)
   }
@@ -25,7 +21,6 @@ const createDatabaseCallbacks = (jobId: string, retailer: string): Partial<Scrap
 
   const databaseCallbacks = {
     onProduct,
-    onProgress,
     onError,
     onFinish
   }

@@ -76,9 +76,12 @@ class ProductDatabase {
     await this.db.run('DELETE FROM products')
   }
 
-  async toJSONFile (jobId?: string) {
+  async toJSONFile (jobId: string) {
+    const date = new Date()
+    const dateString = `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}-${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`
+
     const data = await this.get(jobId)
-    fs.writeFileSync(`logs/products${jobId ? "-"+jobId : ''}.json`, JSON.stringify(data, null, 2))
+    fs.writeFileSync(`logs/${jobId}-${dateString}/products-${jobId}.json`, JSON.stringify(data, null, 2))
   }
 }
 

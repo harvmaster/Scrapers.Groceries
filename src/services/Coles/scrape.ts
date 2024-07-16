@@ -19,22 +19,26 @@ export const scrapeColes: Scraper = async (options?: Partial<ScraperOptions>): P
 
   const rateLimiter = new RateLimitQueue(5, 250)
   
-  const coles = await createColesInterface()
+  const coles = await createColesInterface(callbacks)
   try {
 
     const sentryVersion = await getSentryVersion(coles.page);
 
-    const categoryScraper = createCategoryScraper(coles.fetch, sentryVersion, options?.callbacks)
+    const categoryScraper = createCategoryScraper(coles, sentryVersion, options?.callbacks)
   
     const categories = getCategories()
     const limitedCategories = categories.slice(0, options?.limit)
 
     const categoryFns = await Promise.all(limitedCategories.map(async (category) => {
-      const categoryPageScrapers = await rateLimiter.add(() => categoryScraper(category))
-      return categoryPageScrapers
+      const { categoryPageScrapers, endpoints } = await rateLimiter.add(() => categoryScraper(category))
+      return { categoryPageScrapers, endpoints }
     }))
 
-    const allFns = categoryFns.flat()
+    const endpoints = categoryFns.map(({ endpoints }) => endpoints).flat()
+    callbacks.onEndpoints?.(endpoints)
+
+    const categoryFnsFlat = categoryFns.map(({ categoryPageScrapers }) => categoryPageScrapers)
+    const allFns = categoryFnsFlat.flat()
     
     const trackProgress = useProgressTracker(allFns.length, callbacks.onProgress)
   
