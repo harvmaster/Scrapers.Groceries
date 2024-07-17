@@ -1,9 +1,11 @@
 import { Database } from 'bun:sqlite'
 import fs from 'fs'
 import type { Product } from '../services/Woolworths'
+import Queue from './queue'
 
 class ProductDatabase {
   private db: Database
+  private queue: Queue
 
   constructor () {
     this.db = new Database('products.sqlite')
@@ -24,41 +26,44 @@ class ProductDatabase {
         category TEXT,
         subcategory TEXT
       )`)
+
+    this.queue = new Queue()
   }
 
   async insert (product: Product, retailer: string, jobId: string = '') {
-    // await this.db.run('INSERT INTO analytics (data, jobId) VALUES (?, ?)', [msg, jobId])
-    await this.db.run(`INSERT INTO products (
+    this.queue.add(async () => {
+      await this.db.run(`INSERT INTO products (
+          retailer,
+          retailer_id,
+          retailer_url,
+          barcode,
+          name,
+          brand,
+          description,
+          images,
+          price,
+          was_price,
+          unit,
+          category,
+          subcategory,
+          jobId
+        ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)`, [
         retailer,
-        retailer_id,
-        retailer_url,
-        barcode,
-        name,
-        brand,
-        description,
-        images,
-        price,
-        was_price,
-        unit,
-        category,
-        subcategory,
+        product.retailer_id,
+        product.retailer_url,
+        product.barcode,
+        product.name,
+        product.brand,
+        product.description,
+        JSON.stringify(product.images),
+        product.price,
+        product.was_price,
+        product.unit,
+        product.category,
+        product.subcategory,
         jobId
-      ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)`, [
-      retailer,
-      product.retailer_id,
-      product.retailer_url,
-      product.barcode,
-      product.name,
-      product.brand,
-      product.description,
-      JSON.stringify(product.images),
-      product.price,
-      product.was_price,
-      product.unit,
-      product.category,
-      product.subcategory,
-      jobId
-    ])
+      ])
+    })
   }
 
   async get (jobId: string = '') {

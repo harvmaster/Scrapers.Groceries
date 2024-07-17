@@ -34,7 +34,6 @@ const createScraper = (name: string, scraper: Scraper): () => Promise<Product[]>
   const loggingCallbacks = createLoggingCallbacks(name)
 
   return async () => scraper({
-    limit: 2,
     callbacks: [
       analyticCallbacks,
       databaseCallbacks,

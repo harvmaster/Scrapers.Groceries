@@ -141,6 +141,7 @@ const createAnalyticsCallbacks = (scraperId: string, options?: Partial<Analyitcs
     addAnalytics({
       description: 'fetch_error',
       status: 'error',
+
       data: {
         error: JSON.stringify(error, Object.getOwnPropertyNames(error)),
         meta
@@ -162,6 +163,7 @@ const createAnalyticsCallbacks = (scraperId: string, options?: Partial<Analyitcs
     addAnalytics({
       description: 'error',
       status: 'error',
+      
       data: {
         error: JSON.stringify(error, Object.getOwnPropertyNames(error)),
         meta

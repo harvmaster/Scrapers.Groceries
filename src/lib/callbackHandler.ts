@@ -22,7 +22,12 @@ export const createCallbackHandler = <T extends CallbackGroup>(callbacks: T[]): 
   Object.entries(callbackArray).forEach(([key, value]) => {
     handler[key] = (...args: any[]) => {
       value.forEach((callback) => {
-        callback(...args)
+        try {
+          callback(...args)
+        } catch (err) {
+          // Do nothing. We don't want to stop the other callbacks from running or stop the main process
+          // I can probably create a good handler for this, but its not too important because its easy enough to see when a callback fails
+        }
       })
     }
   })

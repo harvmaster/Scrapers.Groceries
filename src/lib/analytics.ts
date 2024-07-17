@@ -1,17 +1,23 @@
 import { Database } from 'bun:sqlite'
 import fs from 'fs'
+import Queue from './queue'
 
 class Analytics {
   private db: Database
+  private queue: Queue
 
   constructor () {
     this.db = new Database('analytics.sqlite')
     this.db.run('CREATE TABLE IF NOT EXISTS analytics (id INTEGER PRIMARY KEY AUTOINCREMENT, jobId TEXT, data Text)')
+
+    this.queue = new Queue()
   }
 
   async insert (message: unknown, jobId: string = '') {
     const msg = JSON.stringify(message)
-    await this.db.run('INSERT INTO analytics (data, jobId) VALUES (?, ?)', [msg, jobId])
+    this.queue.add(async () => {
+      await this.db.run('INSERT INTO analytics (data, jobId) VALUES (?, ?)', [msg, jobId])
+    })
   }
 
   async get (jobId: string = '') {

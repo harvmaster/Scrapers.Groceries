@@ -15,7 +15,6 @@ export type Product = {
   subcategory: string;
 }
 
-
 export type ScraperOptions = {
   limit: number;
   callbacks: Partial<ScrapingCallbacks>[];
