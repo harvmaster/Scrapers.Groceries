@@ -183,3 +183,4 @@ products.sqlite
 logs/*
 
 cookies.json
+config.ts

@@ -1,4 +1,5 @@
 import type { Product } from "../../services/types";
+import { ItemTagging} from '../../../config'
 
 export type CompleteProduct = Product & {
   tags: string[];
@@ -17,11 +18,12 @@ export class ProductTagger {
 
       if (this.products.length > 30) {
         this.processProductBatch()
+        this.timer = null;
       }
-
       else if (!this.timer) {
         this.timer = setTimeout(() => {
           this.processProductBatch()
+          this.timer = null;
         }, 1000)
       }
     })
@@ -32,7 +34,7 @@ export class ProductTagger {
     const batchSize = Math.min(this.products.length, MAX_BATCH_SIZE);
 
     // Get the products to process
-    const products = this.products.slice(0, batchSize);
+    const products = this.products.splice(0, batchSize);
 
     // Create a batch of products to send to the API
     const batch = products.map(queuedProduct => {
