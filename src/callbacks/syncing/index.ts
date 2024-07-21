@@ -16,11 +16,12 @@ const createSyncingCallbacks = (scraperId: string, options?: Partial<{}>): Parti
         },
         body: JSON.stringify({
           product,
-          ScraperKey
+          scraperKey: ScraperKey
         })
       })
 
       if (!res.ok) {
+        console.log(product)
         throw new Error(`Failed to sync product (${product.description} [${product.retailer}]) ${await res.text()}`)
       }
 
