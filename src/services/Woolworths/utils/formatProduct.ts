@@ -3,6 +3,7 @@ import formatText from "../../../lib/text";
 
 export const formatProduct = (url: string, product: WoolworthsProduct): Product => {
   return {
+    retailer: 'Woolworths',
     retailer_id: product.Stockcode.toString(),
     retailer_url: url,
     barcode: product.Barcode,

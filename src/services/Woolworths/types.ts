@@ -45,6 +45,7 @@ export type ScrapingCallbacks = SitemapCallbacks & ProductURLSCallbacks & Produc
 }
 
 export type Product = {
+  retailer: string;
   retailer_id: string;
   retailer_url: string;
   barcode: string;

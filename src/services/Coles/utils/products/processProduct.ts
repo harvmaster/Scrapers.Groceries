@@ -23,6 +23,7 @@ export const processProduct = async (product: ColesProduct, callbacks?: Partial<
     const pricing = product.availability ? product.pricing : { now: 0, was: 0, unit: { ofMeasureType: 'unknown' } }
   
     const newProduct: Product = {
+      retailer: 'Coles',
       retailer_id: product.id.toString(),
       retailer_url: productURL,
       barcode,

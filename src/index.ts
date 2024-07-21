@@ -6,6 +6,7 @@ import scrapeColes from './services/Coles/scrape';
 import createAnalyticsCallbacks from './callbacks/analytics';
 import createDatabaseCallbacks from './callbacks/database';
 import createLoggingCallbacks from './callbacks/logging';
+import createSyncingCallbacks from './callbacks/syncing';
 
 const batchId = Math.random().toString(36).substring(7)
 
@@ -31,13 +32,17 @@ const createScraper = (name: string, scraper: Scraper): () => Promise<Product[]>
     outputDir: name,
     batchId
   })
+
   const loggingCallbacks = createLoggingCallbacks(name)
+  const syncingCallbacks = createSyncingCallbacks(scraperId)
 
   return async () => scraper({
+    limit: 1,
     callbacks: [
       analyticCallbacks,
       databaseCallbacks,
-      loggingCallbacks
+      loggingCallbacks,
+      syncingCallbacks
     ]
   })
 }

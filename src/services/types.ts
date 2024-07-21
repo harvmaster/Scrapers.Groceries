@@ -1,7 +1,8 @@
 export type Product = {
+  retailer: string;
   retailer_id: string;
   retailer_url: string;
-  barcode: string;
+  barcode?: string;
   name: string;
   brand: string;
   description: string;
