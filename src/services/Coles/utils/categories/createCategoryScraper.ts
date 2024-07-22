@@ -1,4 +1,4 @@
-import type { ScrapingCallbacks } from "../../../types";
+import type { ScrapingCallbacks } from "../../../../types";
 import type { Category, CategoryResponse, ColesProduct, SentryVersionString } from "../../types";
 import { Coles } from '../createColesInstance'
 

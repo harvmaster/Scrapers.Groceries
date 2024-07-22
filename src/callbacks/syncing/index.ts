@@ -1,4 +1,4 @@
-import type { Product, ScrapingCallbacks } from "../../services/types";
+import type { Product, ScrapingCallbacks } from "../../types";
 
 import { ScraperKey, ScraperURL } from '../../../config'
 

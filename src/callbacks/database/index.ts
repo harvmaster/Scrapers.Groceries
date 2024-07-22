@@ -1,5 +1,5 @@
 import database from "../../lib/database";
-import type { ScrapingCallbacks, Product } from "../../services/types";
+import type { ScrapingCallbacks, Product } from "../../types";
 
 type DatabaseOptions = {
   retailer: string;

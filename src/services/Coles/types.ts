@@ -1,4 +1,3 @@
-
 export type CategoryMapUrl = 'https://www.coles.com.au/sitemap/sitemap-categories.xml'
 
 export type Category = string;

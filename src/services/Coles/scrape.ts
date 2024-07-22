@@ -1,4 +1,4 @@
-import type { Scraper, ScrapingCallbacks, Product, ScraperOptions } from '../types'
+import type { Scraper, Product, ScraperOptions } from '../../types'
 
 import createColesInterface from "./utils/createColesInstance"
 

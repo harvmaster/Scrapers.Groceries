@@ -1,4 +1,4 @@
-import type { Product, Scraper } from './services/types';
+import type { Product, Scraper } from './types';
 
 import { scrapeWoolworths } from './services/Woolworths'
 import scrapeColes from './services/Coles/scrape';

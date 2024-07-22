@@ -1,4 +1,4 @@
-import type { Product, ProductCallbacks } from "../../../types";
+import type { Product, ProductCallbacks } from "../../../../types";
 import type { ColesProduct, ImageUri } from "../../types";
 import getProductBarcode from "./getProductBarcode";
 

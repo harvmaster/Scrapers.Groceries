@@ -1,5 +1,5 @@
-import type { ProductCallbacks } from "../../types";
-import type { WoolworthsProduct, ShopProductURL, Product } from "../types";
+import type { ProductCallbacks } from "../../../types";
+import type { ShopProductURL, Product } from "../types";
 
 import getStockCode from "./getStockCode";
 import getDetailsURL from "./getDetailsURL";

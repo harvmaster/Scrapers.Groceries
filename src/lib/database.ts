@@ -1,6 +1,6 @@
 import { Database } from 'bun:sqlite'
 import fs from 'fs'
-import type { Product } from '../services/Woolworths'
+import type { Product } from '../types'
 import Queue from './queue'
 
 class ProductDatabase {
@@ -51,7 +51,7 @@ class ProductDatabase {
         retailer,
         product.retailer_id,
         product.retailer_url,
-        product.barcode,
+        product.barcode || '',
         product.name,
         product.brand,
         product.description,

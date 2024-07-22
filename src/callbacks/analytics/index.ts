@@ -1,5 +1,5 @@
 import analytics from "../../lib/analytics";
-import type { ScrapingCallbacks, Product } from "../../services/types";
+import type { ScrapingCallbacks, Product } from "../../types";
 
 type AnalyticsData = {
   description: string;

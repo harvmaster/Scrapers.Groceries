@@ -1,4 +1,4 @@
-import type { Product, ScrapingCallbacks, ProductCallbacks, ScraperOptions } from '../types'
+import type { Product, ScrapingCallbacks, ProductCallbacks, ScraperOptions } from '../../types'
 import type { WoolworthsProduct } from './types';
 
 import { sitemaps } from './Woolworths';

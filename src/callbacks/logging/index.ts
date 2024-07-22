@@ -1,4 +1,4 @@
-import type { ScrapingCallbacks } from "../../services/types";
+import type { ScrapingCallbacks } from "../../types";
 
 type StoreSummaries = Record<string, StoreSummary>;
 

@@ -1,4 +1,4 @@
-import type { ScrapingCallbacks } from '../../types';
+import type { ScrapingCallbacks } from '../../../types';
 import type { Browser, Page } from 'playwright';
 
 import playwrightExtra from 'playwright-extra';
