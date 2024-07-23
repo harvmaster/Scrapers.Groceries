@@ -1,5 +1,5 @@
 import type { ScrapingCallbacks } from '../../../types';
-import type { Browser, Page } from 'playwright';
+import type { Browser, BrowserContext, Page } from 'playwright';
 
 import playwrightExtra from 'playwright-extra';
 import puppeteerStealth from 'puppeteer-extra-plugin-stealth';
@@ -9,19 +9,35 @@ import { loadCookies, saveCookies } from './persistentCookies';
 export class Coles {
   private pages: Page[] = []
 
-  constructor (private browser: Browser, public page: Page, private callbacks?: Partial<ScrapingCallbacks>) {}
+  constructor (private browser: Browser, private context: BrowserContext, public page: Page, private callbacks?: Partial<ScrapingCallbacks>) {}
 
-  // Create a new page with cookies and user agent
-  public static preparePage = async (browser: Browser) => {
+  public static async prepareContext (browser: Browser) {
     const userAgent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36';
-    
-    const page = await browser.newPage({
+
+    const context = await browser.newContext({
       acceptDownloads: true,
       extraHTTPHeaders: {
         'User-Agent': userAgent,
       },
       javaScriptEnabled: true,
     })
+
+    return context
+  }
+
+  // Create a new page with cookies and user agent
+  public static preparePage = async (browser: BrowserContext) => {
+    // const userAgent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36';
+    
+    // const page = await browser.newPage({
+    //   acceptDownloads: true,
+    //   extraHTTPHeaders: {
+    //     'User-Agent': userAgent,
+    //   },
+    //   javaScriptEnabled: true,
+    // })
+
+    const page = await browser.newPage()
 
     // Get old cookies and add them to the page
     const oldCookies = loadCookies()
@@ -33,7 +49,7 @@ export class Coles {
 
   // Create a new page and add it to the pages array
   private async createPage () {
-    const page = await Coles.preparePage(this.browser)
+    const page = await Coles.preparePage(this.context)
 
     this.pages.push(page)
     return page
@@ -157,16 +173,28 @@ const createColesInstance = async (callbacks?: Partial<ScrapingCallbacks>) => {
     headless: true,
   })
 
+  const context = await Coles.prepareContext(browser)
+
   // Create a new page and go to the Coles website
-  const page = await Coles.preparePage(browser)
-  await page.goto(`https://www.coles.com.au/browse/deli`)
+  const page = await Coles.preparePage(context)
+
+  // Go to the Coles website, if it fails, close the page and throw an error
+  try {
+    await page.goto(`https://www.coles.com.au/browse/deli`)
+  } catch (err) {
+    console.error(err)
+
+    // Close the page and throw an error
+    await page.close()
+    throw new Error('Failed to load Coles website')
+  }
 
   // Save the cookies to the persistent storage
   const cookies = await page.context().cookies()
   saveCookies(cookies)
 
   // Create a new instance of the Coles class
-  const instance = new Coles(browser, page, callbacks)
+  const instance = new Coles(browser, context, page, callbacks)
 
   // Return the instance
   return instance

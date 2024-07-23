@@ -15,8 +15,22 @@ export const createCategoryScraper = (browser: Coles, sentry: SentryVersionStrin
     const url = createSentryCategoryURL(category, 1, sentry);
     const data = await browser.fetch(url) as CategoryResponse;
 
-    const totalResults = data.pageProps.searchResults.noOfResults
-    const pageSize = data.pageProps.searchResults.pageSize
+    let totalResults;
+    let pageSize;
+
+    try {
+      totalResults = data.pageProps.searchResults.noOfResults
+      pageSize = data.pageProps.searchResults.pageSize
+    } catch (e) {
+      const callbacks = createCallbackHandler(callbackGroups || [])
+      callbacks?.onError?.(e as Error, {
+        description: 'Failed to get total results from category. Likely failed to load the page',
+        url,
+        data
+      })
+      
+      throw e;
+    }
 
     const totalPages = Math.ceil(totalResults / pageSize)
 

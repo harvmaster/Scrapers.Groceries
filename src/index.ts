@@ -23,27 +23,36 @@ const scrape = async () => {
 const createScraper = (name: string, scraper: Scraper): () => Promise<Product[]> => {
   const scraperId = Math.random().toString(36).substring(7)
 
-  const analyticCallbacks = createAnalyticsCallbacks(scraperId, {
-    outputDir: name,
-    batchId
-  })
-  const databaseCallbacks = createDatabaseCallbacks(scraperId, {
-    retailer: name,
-    outputDir: name,
-    batchId
-  })
+  // const analyticCallbacks = createAnalyticsCallbacks(scraperId, {
+  //   outputDir: name,
+  //   batchId
+  // })
+  // const databaseCallbacks = createDatabaseCallbacks(scraperId, {
+  //   retailer: name,
+  //   outputDir: name,
+  //   batchId
+  // })
 
-  const loggingCallbacks = createLoggingCallbacks(name)
-  const syncingCallbacks = createSyncingCallbacks(scraperId)
+  // const loggingCallbacks = createLoggingCallbacks(name)
+  // const syncingCallbacks = createSyncingCallbacks(scraperId)
+
+  const callbacks = [
+    createAnalyticsCallbacks(scraperId, {
+      outputDir: name,
+      batchId
+    }),
+    createDatabaseCallbacks(scraperId, {
+      retailer: name,
+      outputDir: name,
+      batchId
+    }),
+    createLoggingCallbacks(name),
+    // createSyncingCallbacks(scraperId)
+  ]
 
   return async () => scraper({
-    limit: 1,
-    callbacks: [
-      analyticCallbacks,
-      databaseCallbacks,
-      loggingCallbacks,
-      syncingCallbacks
-    ]
+    // limit: 1,
+    callbacks
   })
 }
 

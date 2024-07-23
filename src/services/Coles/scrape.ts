@@ -1,5 +1,7 @@
 import type { Scraper, Product, ScraperOptions } from '../../types'
 
+import { CATEGORIES_BLACKLIST } from './Coles'
+
 import createColesInterface from "./utils/createColesInstance"
 
 import getSentryVersion from "./utils/sentry/getSentryVersion"
@@ -17,7 +19,7 @@ export const scrapeColes: Scraper = async (options?: Partial<ScraperOptions>): P
   
   callbacks.onStart?.()
 
-  const rateLimiter = new RateLimitQueue(5, 250)
+  const rateLimiter = new RateLimitQueue(5, 500)
   
   const coles = await createColesInterface(callbacks)
   try {
@@ -26,7 +28,7 @@ export const scrapeColes: Scraper = async (options?: Partial<ScraperOptions>): P
 
     const categoryScraper = createCategoryScraper(coles, sentryVersion, options?.callbacks)
   
-    const categories = getCategories()
+    const categories = getCategories(CATEGORIES_BLACKLIST)
     const limitedCategories = categories.slice(0, options?.limit)
 
     const categoryFns = await Promise.all(limitedCategories.map(async (category) => {
@@ -58,6 +60,8 @@ export const scrapeColes: Scraper = async (options?: Partial<ScraperOptions>): P
     callbacks.onFinish?.([])
 
     await coles.close()
+    console.log('Closed Coles browser')
+
     return []
   }
 }
