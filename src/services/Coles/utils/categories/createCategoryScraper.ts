@@ -38,12 +38,12 @@ export const createCategoryScraper = (browser: Coles, sentry: SentryVersionStrin
 
     // Create fns for each page
     const fns = Array.from({ length: totalPages }, (_, i) => {
+      const url = createSentryCategoryURL(category, i + 1, sentry);
+      endpoints.push(url)
+
       return async () => {
         const productCallbackGroups = callbackGroups?.map(callbacks => callbacks.generateProductCallbacks?.() || callbacks)
         const productCallbacks = createCallbackHandler(productCallbackGroups || [])
-
-        const url = createSentryCategoryURL(category, i + 1, sentry);
-        endpoints.push(url)
 
         productCallbacks?.beforeProductRequest?.(url)
 

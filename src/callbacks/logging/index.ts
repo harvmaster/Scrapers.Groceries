@@ -49,6 +49,11 @@ export const createLoggingCallbacks = () => {
 
         updateProgress()
       },
+      onProductError: () => {
+        summary[storeName].errors++;
+
+        updateProgress()
+      },
       onProgress: (val: number) => {
         summary[storeName].progress = val;
 

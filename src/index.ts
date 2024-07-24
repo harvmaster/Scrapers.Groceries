@@ -12,7 +12,7 @@ const batchId = Math.random().toString(36).substring(7)
 
 const scrape = async () => {
   const scrapers = [
-    createScraper('Woolworths', scrapeWoolworths),
+    // createScraper('Woolworths', scrapeWoolworths),
     createScraper('Coles', scrapeColes)
   ]
 

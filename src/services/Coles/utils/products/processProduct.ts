@@ -34,8 +34,8 @@ export const processProduct = async (product: ColesProduct, callbacks?: Partial<
       price: pricing.now,
       was_price: pricing.was || pricing.now,
       unit: pricing.unit?.ofMeasureType || 'unknown',
-      category: product.onlineHeirs[0]?.category,
-      subcategory: product.onlineHeirs[0]?.subCategory
+      category: product.onlineHeirs?.[0]?.category,
+      subcategory: product.onlineHeirs?.[0]?.subCategory
     }
   
     callbacks?.onProduct?.(newProduct)
