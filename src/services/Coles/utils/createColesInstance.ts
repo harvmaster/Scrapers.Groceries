@@ -97,7 +97,7 @@ class ColesPage {
     }
   }
 
-  public async fetch (url: string, isRetry = false): Promise<unknown> {
+  public async fetch (url: string, isRetry = true): Promise<unknown> {
     // Call the beforeFetch callback
     this.callbacks?.beforeFetch?.(url)
 
@@ -153,7 +153,7 @@ class ColesPage {
     } catch (err) {
       // Call the onFetchError callback
       const url = this.page.url()
-      this.callbacks?.onFetchError?.(err as Error, { url, rawContent, content, retry: isRetry })
+      this.callbacks?.onFetchError?.(err as Error, { url, rawContent, content, retry: isRetry, source: 'ColesPage.parsePage' })
       
       // If its the first time, retry the fetch
       if (!isRetry) {

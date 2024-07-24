@@ -74,15 +74,19 @@ const createAnalyticsCallbacks = (scraperId: string, options?: Partial<Analyitcs
   // Bit complicated because we need to store the productURL for the product, but I dont want to pass it as a variable to onProductSuccess and onProductError because I also want to be able to time it
   const createProductAnalyticsHandlers = () => {
     let productURL: string
-    let startTime: Date
+    let productStartTime: Date
+
+    const getDuration = () => {
+      return new Date().getTime() - productStartTime.getTime()
+    }
   
     const beforeProductRequest = (url: string): void => {
       productURL = url
-      startTime = new Date()
+      productStartTime = new Date()
     }
 
     const onRawProduct = (product: unknown): void => {
-      const duration = new Date().getTime() - startTime.getTime()
+      const duration = getDuration()
 
       addAnalytics({
         description: 'raw_product_scraped',
@@ -96,7 +100,7 @@ const createAnalyticsCallbacks = (scraperId: string, options?: Partial<Analyitcs
     }
   
     const onProduct = (product: Product): void => {
-      const duration = new Date().getTime() - startTime.getTime()
+      const duration = getDuration()
       storeProduct({ status: 'success', data: product })
   
       addAnalytics({
@@ -111,7 +115,7 @@ const createAnalyticsCallbacks = (scraperId: string, options?: Partial<Analyitcs
     }
   
     const onProductError = (error: Error): void => {
-      const duration = new Date().getTime() - startTime.getTime()
+      const duration = getDuration()
       storeProduct({ status: 'error', data: error })
   
       addAnalytics({
