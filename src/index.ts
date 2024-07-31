@@ -2,6 +2,7 @@ import type { Product, Scraper } from './types';
 
 import { scrapeWoolworths } from './services/Woolworths'
 import scrapeColes from './services/Coles/scrape';
+// import scrapeColes from './services/ColesUI/scrape';
 
 import createAnalyticsCallbacks from './callbacks/analytics';
 import createDatabaseCallbacks from './callbacks/database';
@@ -49,6 +50,10 @@ const createScraper = (name: string, scraper: Scraper): () => Promise<Product[]>
     createLoggingCallbacks(name),
     // createSyncingCallbacks(scraperId)
   ]
+
+  process.on("SIGINT", () => {
+    callbacks.forEach(callback => callback.onFinish?.([]))
+  });
 
   return async () => scraper({
     // limit: 1,

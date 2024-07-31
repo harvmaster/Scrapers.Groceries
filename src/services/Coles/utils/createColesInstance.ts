@@ -16,11 +16,12 @@ export class Coles {
 
     const context = await browser.newContext({
       acceptDownloads: true,
-      extraHTTPHeaders: {
-        'User-Agent': userAgent,
-      },
+      // extraHTTPHeaders: {
+      //   'User-Agent': userAgent,
+      // },
       javaScriptEnabled: true,
     })
+    // const context = await browser.newContext()
 
     return context
   }
@@ -42,7 +43,7 @@ export class Coles {
     // Get old cookies and add them to the page
     const oldCookies = loadCookies()
     await page.context().addCookies(oldCookies)
-    await page.setViewportSize({ width: 1920, height: 1080 })
+    // await page.setViewportSize({ width: 1920, height: 1080 })
 
     return page
   }
@@ -87,7 +88,7 @@ class ColesPage {
   // Go to a URL
   private async goto (url: string, isRetry = false): Promise<void> {
     try {
-      await this.page.goto(url)
+      await this.page.goto(url, { waitUntil: 'domcontentloaded' })
     } catch (err) {
       this.callbacks?.onFetchError?.(err as Error, { url, retry: isRetry })
     
@@ -112,7 +113,9 @@ class ColesPage {
       const res = await this.parsePage(isRetry)
 
       // Run the onFetchSuccess callback
-      this.callbacks?.onFetchSuccess?.(res)
+      this.callbacks?.onFetchSuccess?.(res, { url })
+
+      saveCookies(await this.page.context().cookies())
 
       return res
     } catch (err) {

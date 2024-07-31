@@ -140,6 +140,16 @@ const createAnalyticsCallbacks = (scraperId: string, options?: Partial<Analyitcs
       onProductError
     }
   }
+  
+  const onFetchSuccess = (data: unknown, meta: unknown): void => {
+    addAnalytics({
+      description: 'fetch_success',
+      status: 'success',
+      data: {
+        meta
+      }
+    })
+  }
 
   const onFetchError = (error: Error, meta: unknown): void => {
     addAnalytics({
@@ -192,6 +202,7 @@ const createAnalyticsCallbacks = (scraperId: string, options?: Partial<Analyitcs
     onSitemapError,
     onEndpoints,
     generateProductCallbacks: createProductAnalyticsHandlers,
+    onFetchSuccess,
     onFetchError,
     onStart,
     onError,
