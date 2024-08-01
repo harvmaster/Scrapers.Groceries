@@ -150,8 +150,6 @@ class ColesPage {
     try {
       const json = JSON.parse(content)
 
-      this.callbacks?.onFetchSuccess?.(json)
-
       return json
     } catch (err) {
       // Call the onFetchError callback
@@ -191,6 +189,9 @@ const createColesInstance = async (callbacks?: Partial<ScrapingCallbacks>) => {
     await page.close()
     throw new Error('Failed to load Coles website')
   }
+
+  // Log out successful page load
+  callbacks?.onFetchSuccess?.(await page.content(), { description: 'Initial Coles Page Load', url: 'https://www.coles.com.au/browser/deli' })
 
   // Save the cookies to the persistent storage
   const cookies = await page.context().cookies()
