@@ -2,7 +2,6 @@ import type { Product, Scraper } from './types';
 
 import { scrapeWoolworths } from './services/Woolworths'
 import scrapeColes from './services/Coles/scrape';
-// import scrapeColes from './services/ColesUI/scrape';
 
 import createAnalyticsCallbacks from './callbacks/analytics';
 import createDatabaseCallbacks from './callbacks/database';
@@ -14,7 +13,7 @@ const batchId = Math.random().toString(36).substring(7)
 const scrape = async () => {
   const scrapers = [
     createScraper('Woolworths', scrapeWoolworths),
-    // createScraper('Coles', scrapeColes)
+    createScraper('Coles', scrapeColes)
   ]
 
   const results = await Promise.all(scrapers.map(scraper => scraper()))
@@ -23,19 +22,6 @@ const scrape = async () => {
 
 const createScraper = (name: string, scraper: Scraper): () => Promise<Product[]> => {
   const scraperId = Math.random().toString(36).substring(7)
-
-  // const analyticCallbacks = createAnalyticsCallbacks(scraperId, {
-  //   outputDir: name,
-  //   batchId
-  // })
-  // const databaseCallbacks = createDatabaseCallbacks(scraperId, {
-  //   retailer: name,
-  //   outputDir: name,
-  //   batchId
-  // })
-
-  // const loggingCallbacks = createLoggingCallbacks(name)
-  // const syncingCallbacks = createSyncingCallbacks(scraperId)
 
   const callbacks = [
     createAnalyticsCallbacks(scraperId, {
@@ -48,7 +34,7 @@ const createScraper = (name: string, scraper: Scraper): () => Promise<Product[]>
       batchId
     }),
     createLoggingCallbacks(name),
-    // createSyncingCallbacks(scraperId)
+    createSyncingCallbacks(scraperId)
   ]
 
   process.on("SIGINT", () => {
@@ -56,7 +42,7 @@ const createScraper = (name: string, scraper: Scraper): () => Promise<Product[]>
   });
 
   return async () => scraper({
-    // limit: 1,
+    limit: 1,
     callbacks
   })
 }

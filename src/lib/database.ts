@@ -3,6 +3,8 @@ import fs from 'fs'
 import type { Product } from '../types'
 import Queue from './queue'
 
+type TimestampedProduct = { timestamp: number } & Product
+
 class ProductDatabase {
   private db: Database
   private queue: Queue
@@ -82,23 +84,36 @@ class ProductDatabase {
   }
 
   async toJSONFile (batchId: string, jobId: string, outputDir?: string) {
-    const data = await this.get(jobId)
+    // Get the products from the database
+    const data = await this.get(jobId) as Product[]
 
+    // Add timestamp to each product. This is horrible for memory usage but it's fine for now
+    const products: TimestampedProduct[] = data.map(product => {
+      const timestamp = new Date().getTime()
+      return { timestamp, ...product }
+    })
+
+    // Calculate the path to save the file
     let path = `logs`
 
+    // Check if the logs directory exists, if not create it
     if (!fs.existsSync(path)) {
       fs.mkdirSync(path)
     }
 
+    // Get the total number of logs in the directory
     const totalLogs = fs.readdirSync(path).length
 
+    // Create a new directory for the batch of logs
     path = `${path}/${batchId}-${totalLogs}`
 
+    // Check if the directory exists, if not create it with a new number
     if (!fs.existsSync(path)) {
       path = `logs/${batchId}-${totalLogs + 1}`
       fs.mkdirSync(path)
     }
 
+    // Check if an output directory is specified, if so create it
     if (outputDir) {
       path = `${path}/${outputDir}`
       
@@ -107,7 +122,8 @@ class ProductDatabase {
       }
     }
 
-    fs.writeFileSync(`${path}/products-${jobId}.json`, JSON.stringify(data, null, 2))
+    // Write the products to a file
+    fs.writeFileSync(`${path}/products-${jobId}.json`, JSON.stringify(products, null, 2))
   }
 }
 
